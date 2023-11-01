@@ -1,11 +1,13 @@
 import './App.css'
+import Login from './components/Login'
+import Register from './components/Register'
 
 function App() {
 
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+    <div className="bg-gray-200 flex justify-center items-center">
+      <Login />
+    </div>
   )
 }
 

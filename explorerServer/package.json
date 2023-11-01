@@ -2,6 +2,7 @@
   "name": "explorerserver",
   "version": "1.0.0",
   "description": "Social Media Application",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0"
   }
 }

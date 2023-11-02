@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./db/index.js";
 import router from './routes/user.route.js';
+import cors from "cors";
 
 dotenv.config({
   path: "./.env",
@@ -17,6 +18,7 @@ try {
 }
 
 app.use(express.json());
+app.use(cors());
 
 app.use('/api', router);
 

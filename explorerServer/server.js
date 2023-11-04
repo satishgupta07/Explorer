@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./db/index.js";
-import router from './routes/user.route.js';
+import userRouter from './routes/user.routes.js';
 import cors from "cors";
+import postRouter from "./routes/post.routes.js";
 
 dotenv.config({
   path: "./.env",
@@ -20,7 +21,8 @@ try {
 app.use(express.json());
 app.use(cors());
 
-app.use('/api', router);
+app.use('/api/v1/users', userRouter);
+app.use("/api/v1/posts", postRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on http://localhost:${PORT}`);

@@ -1,6 +1,6 @@
 import Joi from "joi";
 import bcrypt from "bcrypt";
-import { User } from "../../models/user.model.js";
+import { User } from "../../models/user.models.js";
 import CustomErrorHandler from "../../services/CustomErrorHandler.js";
 import JwtService from "../../services/JwtService.js";
 

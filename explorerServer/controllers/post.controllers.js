@@ -32,4 +32,25 @@ const createPost = async (req, res, next) => {
   }
 };
 
-export {createPost}
+const getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find().populate("postedBy", "_id name");
+    res.json({ posts });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const getMyPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find({ postedBy: req.user._id }).populate(
+      "postedBy",
+      "_id name"
+    );
+    res.json({ posts });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export { createPost, getAllPosts, getMyPosts };

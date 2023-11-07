@@ -1,7 +1,38 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { authenticateLogin } from "../services/auth";
+import Swal from "sweetalert2";
 
 function Login() {
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: ''
+  })
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  }
+
+  const loginUser = async (e) => {
+    e.preventDefault();
+    let response = await authenticateLogin(loginData);
+    console.log(response.data)
+    if(response.status === 200) {
+      Swal.fire({
+        title: "User LoggedIn Successfully !!",
+        icon: "success"
+      });
+      navigate("/");
+    } else {
+      Swal.fire({
+        title: "Something went wrong !!",
+        icon: "error"
+      });
+    }
+  }
+
   return (
     <div className="bg-gray-200 flex justify-center items-center">
       <div className="flex justify-center items-center lg:w-2/5 md:w-1/2 w-full p-8">
@@ -18,7 +49,7 @@ function Login() {
           </div>
 
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6" action="#" method="POST">
+            <form className="space-y-6" onSubmit={loginUser}>
               <div>
                 <label
                   htmlFor="email"
@@ -30,6 +61,7 @@ function Login() {
                   <input
                     id="email"
                     name="email"
+                    onChange={(e) => handleChange(e)}
                     type="email"
                     autoComplete="email"
                     required
@@ -51,6 +83,7 @@ function Login() {
                   <input
                     id="password"
                     name="password"
+                    onChange={(e) => handleChange(e)}
                     type="password"
                     autoComplete="current-password"
                     required

@@ -15,7 +15,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ isLoggedIn = false }) {
+export default function Navbar({ isLoggedIn = true }) {
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (

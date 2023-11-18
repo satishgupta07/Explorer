@@ -5,7 +5,7 @@ const createPost = async (req, res, next) => {
   // Validation
   const postSchema = Joi.object({
     title: Joi.string().required(),
-    body: Joi.string().required(),
+    image: Joi.string().required()
   });
 
   const { error } = postSchema.validate(req.body);
@@ -14,12 +14,12 @@ const createPost = async (req, res, next) => {
     return next(error);
   }
 
-  const { title, body } = req.body;
+  const { title, image } = req.body;
 
   req.user.password = undefined;
   const post = new Post({
     title,
-    body,
+    image,
     postedBy: req.user,
   });
 

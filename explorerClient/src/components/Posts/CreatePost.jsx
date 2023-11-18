@@ -1,7 +1,55 @@
-import React from "react";
+import React, { useState } from "react";
+import { createPost } from "../../services/post";
+import conf from "../../config/conf";
 
 function CreatePost() {
-  const [showModal, setShowModal] = React.useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState(null);
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const uploadImage = async () => {
+    setLoading(true);
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", conf.cloudinaryUploadPreset);
+    data.append("cloud_name", conf.cloudName);
+    data.append("folder", "Posts");
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${conf.cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+      const res = await response.json();
+      console.log(res);
+      setUrl(res.url);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const createNewPost = async () => {
+    await uploadImage();
+    try {
+      let post = {
+        title,
+        image: url,
+      };
+      let response = await createPost(post);
+      console.log(response);
+      setShowModal(false);
+      alert("Post created successfully.");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <button
@@ -43,6 +91,8 @@ function CreatePost() {
                       rows="4"
                       class="mt-4 block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Write your thoughts here..."
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
                     ></textarea>
                   </div>
                   <div class="mt-4 relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group ">
@@ -73,6 +123,7 @@ function CreatePost() {
                       type="file"
                       accept="image/*"
                       class="absolute w-full h-full top-0 left-0 z-[201] cursor-pointer opacity-0 "
+                      onChange={(e) => setImage(e.target.files[0])}
                     />
                   </div>
                 </div>
@@ -81,7 +132,7 @@ function CreatePost() {
                   <button
                     className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={createNewPost}
                   >
                     Post
                   </button>

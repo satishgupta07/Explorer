@@ -1,5 +1,6 @@
 import React from "react";
 import Weather from "../components/Weather/Weather";
+import Posts from "../components/Posts/Posts";
 
 function Home() {
   return (
@@ -9,7 +10,7 @@ function Home() {
             <Weather />
         </div>
         <div className="col-span-11 md:col-span-5 shrink-0 order-3 md:order-2 ">
-          <h2>Center Component</h2>
+          <Posts />
         </div>
         <div className="col-span-11 md:col-span-3 relative order-2 md:order-3 ">
           <h2>Right Component</h2>

@@ -87,7 +87,7 @@ const loginUser = async (req, res, next) => {
     // Token
     const access_token = JwtService.sign({ _id: user._id });
 
-    return res.status(200).json({ access_token });
+    return res.status(200).json({ access_token, user });
 
   } catch (err) {
     return next(err);

@@ -18,7 +18,9 @@ function Login() {
   const loginUser = async (e) => {
     e.preventDefault();
     let response = await authenticateLogin(loginData);
-    console.log(response.data)
+    console.log(response.data);
+    localStorage.setItem("jwtToken",response.data.access_token);
+    localStorage.setItem("user",JSON.stringify(response.data.user));
     if(response.status === 200) {
       Swal.fire({
         title: "User LoggedIn Successfully !!",

@@ -1,53 +1,59 @@
-import React, { useState } from "react";
-import { createPost } from "../../services/post";
+import React, { useState, useEffect } from "react";
 import conf from "../../config/conf";
 
 function CreatePost() {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const uploadImage = async () => {
-    setLoading(true);
+  useEffect(() => {
+    if (url) {
+      fetch("http://localhost:3333/api/v1/posts/create-post", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        },
+        body: JSON.stringify({
+          title,
+          image: url,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data.error) {
+            console.log(data.error);
+          } else {
+            console.log("Created Post Successfully");
+            // history.push("/");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [url]);
+
+  const postDetails = () => {
     const data = new FormData();
     data.append("file", image);
     data.append("upload_preset", conf.cloudinaryUploadPreset);
     data.append("cloud_name", conf.cloudName);
     data.append("folder", "Posts");
 
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${conf.cloudName}/image/upload`,
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-      const res = await response.json();
-      console.log(res);
-      setUrl(res.url);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  };
-
-  const createNewPost = async () => {
-    await uploadImage();
-    try {
-      let post = {
-        title,
-        image: url,
-      };
-      let response = await createPost(post);
-      console.log(response);
-      setShowModal(false);
-      alert("Post created successfully.");
-    } catch (error) {
-      console.log(error);
-    }
+    fetch(`https://api.cloudinary.com/v1_1/${conf.cloudName}/image/upload`, {
+      method: "post",
+      body: data,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUrl(data.url);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -132,7 +138,7 @@ function CreatePost() {
                   <button
                     className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    onClick={createNewPost}
+                    onClick={()=>postDetails()}
                   >
                     Post
                   </button>

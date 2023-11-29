@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import CreatePost from "./CreatePost";
 import moment from "moment/moment";
+import { useAuth } from "../../contexts";
 
 function Posts() {
   const [post, setPost] = useState([]);
+  const { token } = useAuth();
+  const jwtToken = token || localStorage.getItem("token");
   useEffect(() => {
     fetch("http://localhost:3333/api/v1/posts/", {
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+        Authorization: "Bearer " + jwtToken,
       },
     })
       .then((res) => res.json())

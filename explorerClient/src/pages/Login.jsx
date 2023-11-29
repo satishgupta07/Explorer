@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authenticateLogin } from "../services/auth";
 import Swal from "sweetalert2";
+import { useAuth } from "../contexts";
 
 function Login() {
   const [loginData, setLoginData] = useState({
@@ -10,6 +11,8 @@ function Login() {
   })
 
   const navigate = useNavigate();
+  const {setUser, setToken} = useAuth();
+  
 
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -18,9 +21,10 @@ function Login() {
   const loginUser = async (e) => {
     e.preventDefault();
     let response = await authenticateLogin(loginData);
-    console.log(response.data);
-    localStorage.setItem("jwtToken",response.data.access_token);
+    localStorage.setItem("token",response.data.access_token);
     localStorage.setItem("user",JSON.stringify(response.data.user));
+    setToken(response.data.access_token);
+    setUser(response.data.user);
     if(response.status === 200) {
       Swal.fire({
         title: "User LoggedIn Successfully !!",

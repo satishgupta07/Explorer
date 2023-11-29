@@ -15,7 +15,6 @@ function Weather() {
     (async _ => {
           const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&APPID=${APP_KEY}&units=metric&lang=en`);
           const data = await response.json();
-          console.log(data);
           const weather_icon = data.list[0].weather[0]['icon'];
           if(response.ok){
             setCityDetails(data.city)
@@ -60,9 +59,9 @@ function Weather() {
             >
               <path
                 stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
               />
             </svg>

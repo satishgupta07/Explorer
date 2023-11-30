@@ -1,21 +1,22 @@
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Profile from "./Profile";
-import { Link } from "react-router-dom";
 import SignUpButtons from "./SignUpButtons";
+import { useAuth } from "../contexts";
+import { Link } from "react-router-dom";
 
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
+  { name: "Dashboard", href: "/", current: true },
 ];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar({ isLoggedIn = true }) {
+export default function Navbar() {
+  const { user, token} = useAuth();
+  const _user = user || localStorage.getItem("user");
+  const _token = token || localStorage.getItem("token");
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -45,9 +46,9 @@ export default function Navbar({ isLoggedIn = true }) {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
-                        href={item.href}
+                        to={item.href}
                         className={classNames(
                           item.current
                             ? "bg-gray-900 text-white"
@@ -57,12 +58,12 @@ export default function Navbar({ isLoggedIn = true }) {
                         aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
               </div>
-              {isLoggedIn ? (
+              {_user && _token ? (
                 <Profile />
               ) : (
                 <SignUpButtons/>

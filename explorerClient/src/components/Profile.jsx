@@ -1,13 +1,28 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { BellIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 function Profile() {
+  const {setUser, setToken} = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    try {
+      setUser(null);
+      setToken(null);
+      localStorage.clear(); // Clear local storage on logout
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
       <button
@@ -70,15 +85,15 @@ function Profile() {
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <a
-                  href="#"
+                <button
                   className={classNames(
                     active ? "bg-gray-100" : "",
                     "block px-4 py-2 text-sm text-gray-700"
                   )}
+                  onClick={handleLogout}
                 >
                   Sign out
-                </a>
+                </button>
               )}
             </Menu.Item>
           </Menu.Items>

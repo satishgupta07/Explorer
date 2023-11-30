@@ -1,6 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { myPosts } from "../services/post";
+import { useAuth } from "../contexts";
+import { useState } from "react";
 
 function ProfilePage() {
+  const [post, setPost] = useState([]);
+  const { token, user } = useAuth();
+  const jwtToken = token || localStorage.getItem("token");
+
+  useEffect(() => {
+    fetch("http://localhost:3333/api/v1/posts/myposts", {
+      headers: {
+        Authorization: "Bearer " + jwtToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log(result);
+        console.log(user);
+        setPost(result.posts);
+      });
+  }, []);
+
   return (
     <div style={{ maxWidth: "550px", margin: "0px auto" }}>
       <div
@@ -18,7 +39,7 @@ function ProfilePage() {
           />
         </div>
         <div>
-          <h4>Ramesh Verma</h4>
+          <h4>{user.name}</h4>
           <div
             style={{
               display: "flex",
@@ -34,30 +55,16 @@ function ProfilePage() {
       </div>
 
       <div className="gallery">
-        <img
-          className="item"
-          src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-        />
-        <img
-          className="item"
-          src="https://images.unsplash.com/photo-1491609154219-ffd3ffafd992?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-        />
-        <img
-          className="item"
-          src="https://images.unsplash.com/photo-1498019559366-a1cbd07b5160?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-        />
-        <img
-          className="item"
-          src="https://images.unsplash.com/photo-1500856056008-859079534e9e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-        />
-        <img
-          className="item"
-          src="https://images.unsplash.com/photo-1491485066275-97da4e681cb8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-        />
-        <img
-          className="item"
-          src="https://images.unsplash.com/photo-1496302662116-35cc4f36df92?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
-        />
+        {post.map((item) => {
+          return (
+            <img
+              key={item._id}
+              className="item"
+              src={item.image}
+              alt={item.title}
+            />
+          );
+        })}
       </div>
     </div>
   );

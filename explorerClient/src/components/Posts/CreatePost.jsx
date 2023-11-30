@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import conf from "../../config/conf";
+import { useAuth } from "../../contexts";
 
 function CreatePost() {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
+  const { user, token } = useAuth();
+  const jwtToken = token || localStorage.getItem("token");
+  const _user = user || localStorage.getItem("user");
 
   useEffect(() => {
     if (url) {
@@ -13,7 +17,7 @@ function CreatePost() {
         method: "post",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+          Authorization: "Bearer " + jwtToken,
         },
         body: JSON.stringify({
           title,
@@ -27,6 +31,7 @@ function CreatePost() {
             console.log(data.error);
           } else {
             console.log("Created Post Successfully");
+            setShowModal(false);
             // history.push("/");
           }
         })
@@ -89,7 +94,7 @@ function CreatePost() {
                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                       alt=""
                     />
-                    <h2 className="ml-4">John</h2>
+                    <h2 className="ml-4">{_user.name}</h2>
                   </div>
                   <div>
                     <textarea

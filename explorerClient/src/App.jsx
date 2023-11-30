@@ -1,6 +1,5 @@
 import "./App.css";
 import Navbar from "./components/Navbar";
-import { useAuth } from "./contexts";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ProfilePage from "./pages/ProfilePage";

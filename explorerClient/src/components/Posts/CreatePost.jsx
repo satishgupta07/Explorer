@@ -64,12 +64,39 @@ function CreatePost() {
   return (
     <>
       <button
+        class="mb-2 p-2 flex w-full items-center justify-start border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        onClick={() => setShowModal(true)}
+      >
+        <img
+          className="flex aspect-square h-10 w-10 shrink-0 rounded-full object-cover"
+          src="https://images.pexels.com/photos/7775642/pexels-photo-7775642.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+          alt="avatar"
+        />
+        <input
+          placeholder="What's on your mind?"
+          class="w-full bg-transparent p-2 text-white !outline-none placeholder:text-gray-500 md:p-4"
+        />
+        <div class="flex gap-x-1 sm:gap-x-2">
+          <button className="flex shrink-0 items-center justify-center bg-[#ae7aff] p-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              class="w-6 text-black"
+            >
+              <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"></path>
+            </svg>
+          </button>
+        </div>
+      </button>
+      {/* <button
         className="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
         type="button"
         onClick={() => setShowModal(true)}
       >
         Create Post
-      </button>
+      </button> */}
       {showModal ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -143,7 +170,7 @@ function CreatePost() {
                   <button
                     className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    onClick={()=>postDetails()}
+                    onClick={() => postDetails()}
                   >
                     Post
                   </button>

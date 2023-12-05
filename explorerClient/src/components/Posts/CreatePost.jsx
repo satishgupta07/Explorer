@@ -9,7 +9,7 @@ function CreatePost() {
   const [url, setUrl] = useState("");
   const { user, token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
-  const _user = user || localStorage.getItem("user");
+  const _user = JSON.parse(user || localStorage.getItem("user"));
 
   useEffect(() => {
     if (url) {

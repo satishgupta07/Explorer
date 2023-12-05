@@ -45,12 +45,13 @@ const getAllPosts = async (req, res, next) => {
         });
         return {
           _id: post._id,
-          image:post.image,
+          title: post.title,
+          image: post.image,
           postedBy: post.postedBy,
           createdAt: post.createdAt,
           updatedAt: post.updatedAt,
           likeCount,
-          isLiked : isLiked ? true : false
+          isLiked: isLiked ? true : false,
         };
       })
     );
@@ -66,7 +67,26 @@ const getMyPosts = async (req, res, next) => {
       "postedBy",
       "_id name"
     );
-    res.json({ posts });
+    const postsWithLikeCount = await Promise.all(
+      posts.map(async (post) => {
+        const likeCount = await SocialLike.countDocuments({ postId: post._id });
+        const isLiked = await SocialLike.exists({
+          postId: post._id,
+          likedBy: req.user?._id,
+        });
+        return {
+          _id: post._id,
+          title: post.title,
+          image: post.image,
+          postedBy: post.postedBy,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          likeCount,
+          isLiked: isLiked ? true : false,
+        };
+      })
+    );
+    res.json({ posts : postsWithLikeCount });
   } catch (err) {
     return next(err);
   }

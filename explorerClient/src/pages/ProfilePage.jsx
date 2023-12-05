@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useAuth } from "../contexts";
 import { useState } from "react";
+import PostCard from "../components/Posts/PostCard";
 
 function ProfilePage() {
   const [post, setPost] = useState([]);
@@ -55,14 +56,7 @@ function ProfilePage() {
 
       <div className="gallery">
         {post.map((item) => {
-          return (
-            <img
-              key={item._id}
-              className="item"
-              src={item.image}
-              alt={item.title}
-            />
-          );
+          return <PostCard key={item._id} post={item} />;
         })}
       </div>
     </div>

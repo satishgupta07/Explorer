@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { myPosts } from "../services/post";
 import { useAuth } from "../contexts";
 import { useState } from "react";
 
@@ -7,6 +6,7 @@ function ProfilePage() {
   const [post, setPost] = useState([]);
   const { token, user } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
+  const _user = JSON.parse(user || localStorage.getItem("user"));
 
   useEffect(() => {
     fetch("http://localhost:3333/api/v1/posts/myposts", {
@@ -17,7 +17,6 @@ function ProfilePage() {
       .then((res) => res.json())
       .then((result) => {
         console.log(result);
-        console.log(user);
         setPost(result.posts);
       });
   }, []);
@@ -39,7 +38,7 @@ function ProfilePage() {
           />
         </div>
         <div>
-          <h4>{user.name}</h4>
+          <h4>{_user.name}</h4>
           <div
             style={{
               display: "flex",

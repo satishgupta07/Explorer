@@ -7,6 +7,7 @@ function Posts() {
   const [post, setPost] = useState([]);
   const { token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
+
   useEffect(() => {
     fetch("http://localhost:3333/api/v1/posts/", {
       headers: {
@@ -18,6 +19,27 @@ function Posts() {
         setPost(result.posts);
       });
   }, []);
+
+  const handleLike = async (_id) => {
+    try {
+      const response = await fetch(`http://localhost:3333/api/v1/posts/post/${_id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + jwtToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to like/dislike post: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error liking/disliking post:", error);
+    }
+  };
 
   return (
     <div className="home">
@@ -61,8 +83,7 @@ function Posts() {
             <div className="flex gap-x-4">
               <button
                 className="group inline-flex items-center gap-x-1 outline-none after:content-[attr(data-like-count)] focus:after:content-[attr(data-like-count-alt)] hover:text-[#ae7aff] focus:text-[#ae7aff]"
-                data-like-count="102"
-                data-like-count-alt="103"
+                onClick={()=>handleLike(item._id)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +92,7 @@ function Posts() {
                   strokeWidth="1.5"
                   stroke="currentColor"
                   aria-hidden="true"
-                  className="h-5 w-5 group-focus:fill-[#ae7aff]"
+                  className={`h-5 w-5 group-focus ${item.isLiked ? 'fill-[#ae7aff]' : ''}`}
                 >
                   <path
                     strokeLinecap="round"
@@ -79,6 +100,7 @@ function Posts() {
                     d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
                   ></path>
                 </svg>
+                <span>{item.likeCount}</span>
               </button>
               <button className="inline-flex items-center gap-x-1 outline-none hover:text-[#ae7aff]">
                 <svg

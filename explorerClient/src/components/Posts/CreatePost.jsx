@@ -64,7 +64,7 @@ function CreatePost() {
   return (
     <>
       <button
-        class="mb-2 p-2 flex w-full items-center justify-start border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        className="mb-2 p-2 flex w-full items-center justify-start border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
         onClick={() => setShowModal(true)}
       >
         <img
@@ -74,20 +74,20 @@ function CreatePost() {
         />
         <input
           placeholder="What's on your mind?"
-          class="w-full bg-transparent p-2 text-white !outline-none placeholder:text-gray-500 md:p-4"
+          className="w-full bg-transparent p-2 text-white !outline-none placeholder:text-gray-500 md:p-4"
         />
-        <div class="flex gap-x-1 sm:gap-x-2">
-          <button className="flex shrink-0 items-center justify-center bg-[#ae7aff] p-1">
+        <div className="flex gap-x-1 sm:gap-x-2">
+          <div className="flex shrink-0 items-center justify-center bg-[#ae7aff] p-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
               aria-hidden="true"
-              class="w-6 text-black"
+              className="w-6 text-black"
             >
               <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"></path>
             </svg>
-          </button>
+          </div>
         </div>
       </button>
       {/* <button
@@ -127,21 +127,21 @@ function CreatePost() {
                     <textarea
                       id="message"
                       rows="4"
-                      class="mt-4 block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="mt-4 block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Write your thoughts here..."
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                     ></textarea>
                   </div>
-                  <div class="mt-4 relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group ">
-                    <div class="w-full h-full rounded-md flex flex-col items-center justify-center dark:group-hover:bg-[#47494A] relative bg-[#EAEBED]/60 group-hover:bg-[#d9dadc]/60 dark:bg-inherit ">
+                  <div className="mt-4 relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group ">
+                    <div className="w-full h-full rounded-md flex flex-col items-center justify-center dark:group-hover:bg-[#47494A] relative bg-[#EAEBED]/60 group-hover:bg-[#d9dadc]/60 dark:bg-inherit ">
                       <div>
                         <svg
                           stroke="currentColor"
                           fill="currentColor"
-                          stroke-width="0"
+                          strokeWidth="0"
                           viewBox="0 0 24 24"
-                          class="w-10 h-10 rounded-full dark:bg-[#5A5C5C] p-1.5 text-black/60 bg-[#D8DADF] "
+                          className="w-10 h-10 rounded-full dark:bg-[#5A5C5C] p-1.5 text-black/60 bg-[#D8DADF] "
                           height="1em"
                           width="1em"
                           xmlns="http://www.w3.org/2000/svg"
@@ -150,17 +150,17 @@ function CreatePost() {
                           <path d="M19 7v2.99s-1.99.01-2 0V7h-3s.01-1.99 0-2h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"></path>
                         </svg>
                       </div>
-                      <div class="font-semibold text-[18px] leading-5 text-black/60 dark:text-white/60 ">
+                      <div className="font-semibold text-[18px] leading-5 text-black/60 dark:text-white/60 ">
                         Add photos
                       </div>
-                      <span class="text-[12px] text-[#949698] dark:text-[#b0b3b8] ">
+                      <span className="text-[12px] text-[#949698] dark:text-[#b0b3b8] ">
                         or drag and drop
                       </span>
                     </div>
                     <input
                       type="file"
                       accept="image/*"
-                      class="absolute w-full h-full top-0 left-0 z-[201] cursor-pointer opacity-0 "
+                      className="absolute w-full h-full top-0 left-0 z-[201] cursor-pointer opacity-0 "
                       onChange={(e) => setImage(e.target.files[0])}
                     />
                   </div>

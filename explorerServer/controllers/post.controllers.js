@@ -1,6 +1,7 @@
 import Joi from "joi";
 import { Post } from "../models/post.models.js";
 import { SocialLike } from "../models/like.models.js";
+import { Comment } from "../models/comment.models.js";
 
 const createPost = async (req, res, next) => {
   // Validation
@@ -39,6 +40,8 @@ const getAllPosts = async (req, res, next) => {
     const postsWithLikeCount = await Promise.all(
       posts.map(async (post) => {
         const likeCount = await SocialLike.countDocuments({ postId: post._id });
+        const commentCount = await Comment.countDocuments({ postId: post._id });
+        const comments = await Comment.find({ postId: post._id }).populate("author", "_id name");
         const isLiked = await SocialLike.exists({
           postId: post._id,
           likedBy: req.user?._id,
@@ -52,6 +55,8 @@ const getAllPosts = async (req, res, next) => {
           updatedAt: post.updatedAt,
           likeCount,
           isLiked: isLiked ? true : false,
+          commentCount,
+          comments
         };
       })
     );
@@ -70,6 +75,8 @@ const getMyPosts = async (req, res, next) => {
     const postsWithLikeCount = await Promise.all(
       posts.map(async (post) => {
         const likeCount = await SocialLike.countDocuments({ postId: post._id });
+        const commentCount = await Comment.countDocuments({ postId: post._id });
+        const comments = await Comment.find({ postId: post._id }).populate("author", "_id name");
         const isLiked = await SocialLike.exists({
           postId: post._id,
           likedBy: req.user?._id,
@@ -82,7 +89,9 @@ const getMyPosts = async (req, res, next) => {
           createdAt: post.createdAt,
           updatedAt: post.updatedAt,
           likeCount,
+          commentCount,
           isLiked: isLiked ? true : false,
+          comments
         };
       })
     );

@@ -77,7 +77,7 @@ function CreatePost() {
           className="w-full bg-transparent p-2 text-white !outline-none placeholder:text-gray-500 md:p-4"
         />
         <div className="flex gap-x-1 sm:gap-x-2">
-          <div className="flex shrink-0 items-center justify-center bg-[#ae7aff] p-1">
+          <div className="flex shrink-0 items-center justify-center bg-[#ae7aff] p-1 rounded-2xl">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

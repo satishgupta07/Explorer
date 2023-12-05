@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import moment from "moment/moment";
 import { useAuth } from "../../contexts";
+import Comment from "./Comment";
 
 function PostCard({ post }) {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [commentCount, setCommentCount] = useState(post.commentCount);
+  const [showComment, setShowComment] = useState(false);
+  const [textComment, setTextComment] = useState("");
   const { token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
 
@@ -34,6 +38,38 @@ function PostCard({ post }) {
       }
     } catch (error) {
       console.error("Error liking/disliking post:", error);
+    }
+  };
+
+  const addComment = async (_id) => {
+    if (!textComment) {
+      return;
+    }
+    try {
+      const response = await fetch(
+        `http://localhost:3333/api/v1/comments/post/${_id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + jwtToken,
+          },
+          body: JSON.stringify({ content: textComment }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to comment on post: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      if (data) {
+        console.log(data);
+        setShowComment(true);
+        setTextComment("");
+      }
+    } catch (error) {
+      console.error("Error while commenting on post:", error);
     }
   };
 
@@ -91,7 +127,12 @@ function PostCard({ post }) {
           </svg>
           <span>{likeCount}</span>
         </button>
-        <button className="inline-flex items-center gap-x-1 outline-none hover:text-[#ae7aff]">
+        <button
+          className="inline-flex items-center gap-x-1 outline-none hover:text-[#ae7aff]"
+          onClick={() => {
+            setShowComment(!showComment);
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -105,9 +146,59 @@ function PostCard({ post }) {
               clipRule="evenodd"
             ></path>
           </svg>
-          <span>18</span>
+          <span>{commentCount}</span>
         </button>
       </div>
+      <div className="flex gap-x-1.5 px-2 sm:px-3 md:px-4 py-1 items-center mt-2">
+        <img
+          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+          alt="user_avatar"
+          className="w-8 sm:w-9 h-8 sm:h-9 object-cover shrink-0 rounded-full "
+        />
+        <form
+          className="flex px-2 rounded-full bg-[#F0F2F5] w-full mt-1 items-center dark:bg-[#3A3B3C]"
+          onSubmit={(e) => {
+            e.preventDefault();
+            addComment(post._id);
+          }}
+        >
+          <input
+            type="text"
+            className="px-2 py-1 sm:py-1.5 border-none focus:ring-0 bg-inherit rounded-full w-full font-medium dark:placeholder:text-[#b0b3b8] "
+            placeholder="Write a comment..."
+            value={textComment}
+            onChange={(e) => {
+              setTextComment(e.target.value);
+            }}
+          />
+          <button type="submit" className="flex gap-x-1 sm:gap-x-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              className="w-6 text-black"
+            >
+              <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"></path>
+            </svg>
+          </button>
+        </form>
+      </div>
+      {/* comment box */}
+      {showComment && (
+        <div className="m-2 p-1 bg-white border border-gray-200 rounded-lg shadow">
+          {post.comments.length > 0 ? (
+            <>
+              {post.comments.map((comment) => (
+                <Comment key={comment._id} comment={comment} />
+              ))}
+            </>
+          ) : (
+            <h3 className="p-2">No Comments</h3>
+          )}
+        </div>
+        //
+      )}
     </div>
   );
 }

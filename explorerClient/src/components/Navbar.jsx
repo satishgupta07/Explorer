@@ -6,7 +6,7 @@ import { useAuth } from "../contexts";
 import { Link } from "react-router-dom";
 
 const navigation = [
-  { name: "Dashboard", href: "/", current: true },
+  { name: "Explorer", href: "/", current: true },
 ];
 
 function classNames(...classes) {
@@ -18,7 +18,7 @@ export default function Navbar() {
   const _user = user || localStorage.getItem("user");
   const _token = token || localStorage.getItem("token");
   return (
-    <Disclosure as="nav" className="bg-gray-800">
+    <Disclosure as="nav" className="bg-gray-800 sticky top-0 z-10">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">

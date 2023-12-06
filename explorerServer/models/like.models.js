@@ -7,11 +7,6 @@ const likeSchema = new Schema(
       ref: "Post",
       default: null,
     },
-    commentId: {
-      type: Schema.Types.ObjectId,
-      ref: "Comment",
-      default: null,
-    },
     likedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

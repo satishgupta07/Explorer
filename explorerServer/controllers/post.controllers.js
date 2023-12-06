@@ -2,6 +2,8 @@ import Joi from "joi";
 import { Post } from "../models/post.models.js";
 import { SocialLike } from "../models/like.models.js";
 import { Comment } from "../models/comment.models.js";
+import { ApiError } from "../services/ApiError.js";
+import { ApiResponse } from "../services/ApiResponse.js";
 
 const createPost = async (req, res, next) => {
   // Validation
@@ -41,7 +43,10 @@ const getAllPosts = async (req, res, next) => {
       posts.map(async (post) => {
         const likeCount = await SocialLike.countDocuments({ postId: post._id });
         const commentCount = await Comment.countDocuments({ postId: post._id });
-        const comments = await Comment.find({ postId: post._id }).populate("author", "_id name");
+        const comments = await Comment.find({ postId: post._id }).populate(
+          "author",
+          "_id name"
+        );
         const isLiked = await SocialLike.exists({
           postId: post._id,
           likedBy: req.user?._id,
@@ -56,7 +61,7 @@ const getAllPosts = async (req, res, next) => {
           likeCount,
           isLiked: isLiked ? true : false,
           commentCount,
-          comments
+          comments,
         };
       })
     );
@@ -76,7 +81,10 @@ const getMyPosts = async (req, res, next) => {
       posts.map(async (post) => {
         const likeCount = await SocialLike.countDocuments({ postId: post._id });
         const commentCount = await Comment.countDocuments({ postId: post._id });
-        const comments = await Comment.find({ postId: post._id }).populate("author", "_id name");
+        const comments = await Comment.find({ postId: post._id }).populate(
+          "author",
+          "_id name"
+        );
         const isLiked = await SocialLike.exists({
           postId: post._id,
           likedBy: req.user?._id,
@@ -91,14 +99,31 @@ const getMyPosts = async (req, res, next) => {
           likeCount,
           commentCount,
           isLiked: isLiked ? true : false,
-          comments
+          comments,
         };
       })
     );
-    res.json({ posts : postsWithLikeCount });
+    res.json({ posts: postsWithLikeCount });
   } catch (err) {
     return next(err);
   }
 };
 
-export { createPost, getAllPosts, getMyPosts };
+const deletePost = async (req, res, next) => {
+  const { postId } = req.params;
+
+  const post = await Post.findOneAndDelete({
+    _id: postId,
+    postedBy: req.user._id,
+  });
+
+  if (!post) {
+    throw new ApiError(404, "Post does not exist");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Post deleted successfully"));
+};
+
+export { createPost, getAllPosts, getMyPosts, deletePost };

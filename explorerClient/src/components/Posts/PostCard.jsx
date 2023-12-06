@@ -9,8 +9,9 @@ function PostCard({ post }) {
   const [commentCount, setCommentCount] = useState(post.commentCount);
   const [showComment, setShowComment] = useState(false);
   const [textComment, setTextComment] = useState("");
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
+  const _user = JSON.parse(user || localStorage.getItem("user"));
 
   const handleLike = async (_id) => {
     try {
@@ -73,6 +74,21 @@ function PostCard({ post }) {
     }
   };
 
+  const deletePost = (postId) => {
+    console.log(postId);
+    fetch(`http://localhost:3333/api/v1/posts/deletepost/${postId}`, {
+      method: "delete",
+      headers: {
+        Authorization: "Bearer " + jwtToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log(result);
+        alert("Post deleted successfully !");
+      });
+  };
+
   return (
     <div className="my-4 p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <div className="flex items-center pl-2 pr-3 sm:px-3 md:px-4">
@@ -86,7 +102,7 @@ function PostCard({ post }) {
           // }}
         />
         {/* name and time post */}
-        <div className={`ml-2 font-bold `}>
+        <div className={`ml-2 font-bold`}>
           <div
             className="flex items-center gap-x-1 cursor-pointer"
             onClick={() => {
@@ -100,6 +116,20 @@ function PostCard({ post }) {
             {moment(post.createdAt).fromNow()}
           </div>
         </div>
+        {post.postedBy._id == _user._id && (
+          <button
+            className="ml-auto shrink-0"
+            onClick={() => deletePost(post._id)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 30 30"
+              className="h-5 w-5"
+            >
+              <path d="M 14.984375 2.4863281 A 1.0001 1.0001 0 0 0 14 3.5 L 14 4 L 8.5 4 A 1.0001 1.0001 0 0 0 7.4863281 5 L 6 5 A 1.0001 1.0001 0 1 0 6 7 L 24 7 A 1.0001 1.0001 0 1 0 24 5 L 22.513672 5 A 1.0001 1.0001 0 0 0 21.5 4 L 16 4 L 16 3.5 A 1.0001 1.0001 0 0 0 14.984375 2.4863281 z M 6 9 L 7.7929688 24.234375 C 7.9109687 25.241375 8.7633438 26 9.7773438 26 L 20.222656 26 C 21.236656 26 22.088031 25.241375 22.207031 24.234375 L 24 9 L 6 9 z" />
+            </svg>
+          </button>
+        )}
       </div>
       <p className="my-4 text-sm sm:text-base">{post.title}</p>
       <div className="my-4 grid grid-cols-[repeat(auto-fit,_minmax(200px,_1fr))] gap-4">

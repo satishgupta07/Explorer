@@ -5,7 +5,7 @@ import Tags from "../components/Tags/Tags";
 
 function Home() {
   return (
-    <div className="overflow-x-hidden min-h-screen pt-16 md:pt-[85px]">
+    <div className="overflow-x-hidden min-h-screen pt-4">
       <div className="w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative ">
         <div className="col-span-11 md:col-span-3 relative order-1 ">
             <Weather />

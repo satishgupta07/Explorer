@@ -3,6 +3,7 @@ import moment from "moment/moment";
 import { useAuth } from "../../contexts/AuthContext";
 import Comment from "./Comment";
 import { usePost } from "../../contexts/PostContext";
+import { useNavigate } from "react-router-dom";
 
 function PostCard({ post }) {
   const [isLiked, setIsLiked] = useState(post.isLiked);
@@ -14,6 +15,7 @@ function PostCard({ post }) {
   const jwtToken = token || localStorage.getItem("token");
   const _user = user || localStorage.getItem("user");
   const { posts, setPosts } = usePost();
+  const navigate = useNavigate();
 
   const handleLike = async (_id) => {
     try {

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import moment from "moment/moment";
-import { useAuth } from "../../contexts";
+import { useAuth } from "../../contexts/AuthContext";
 import Comment from "./Comment";
+import { usePost } from "../../contexts/PostContext";
 
 function PostCard({ post }) {
   const [isLiked, setIsLiked] = useState(post.isLiked);
@@ -11,7 +12,8 @@ function PostCard({ post }) {
   const [textComment, setTextComment] = useState("");
   const { token, user } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
-  const _user = JSON.parse(user || localStorage.getItem("user"));
+  const _user = user || localStorage.getItem("user");
+  const { posts, setPosts } = usePost();
 
   const handleLike = async (_id) => {
     try {
@@ -86,6 +88,10 @@ function PostCard({ post }) {
       .then((result) => {
         console.log(result);
         alert("Post deleted successfully !");
+        const newposts = posts.filter((item) => {
+          return item._id !== result._id;
+        });
+        setPosts(newposts);
       });
   };
 

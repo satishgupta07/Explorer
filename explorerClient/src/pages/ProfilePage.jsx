@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useAuth } from "../contexts";
+import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
 import PostCard from "../components/Posts/PostCard";
 
@@ -7,7 +7,7 @@ function ProfilePage() {
   const [post, setPost] = useState([]);
   const { token, user } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
-  const _user = JSON.parse(user || localStorage.getItem("user"));
+  const _user = user || localStorage.getItem("user");
 
   useEffect(() => {
     fetch("http://localhost:3333/api/v1/posts/myposts", {

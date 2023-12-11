@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import CreatePost from "./CreatePost";
-import { useAuth } from "../../contexts";
+import { useAuth } from "../../contexts/AuthContext";
 import PostCard from "./PostCard";
+import { usePost } from "../../contexts/PostContext";
 
 function Posts() {
-  const [post, setPost] = useState([]);
+  // const [post, setPost] = useState([]);
   const { token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
+  const {posts, setPosts} = usePost();
 
   useEffect(() => {
     fetch("http://localhost:3333/api/v1/posts/", {
@@ -16,14 +18,14 @@ function Posts() {
     })
       .then((res) => res.json())
       .then((result) => {
-        setPost(result.posts);
+        setPosts(result.posts);
       });
   }, []);
 
   return (
     <div className="home">
       <CreatePost />
-      {post.map((item) => {
+      {posts.map((item) => {
         return (
           <PostCard key={item._id} post={item}/>
         );

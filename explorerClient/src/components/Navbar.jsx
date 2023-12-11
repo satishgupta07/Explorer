@@ -2,7 +2,7 @@ import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Profile from "./Profile";
 import SignUpButtons from "./SignUpButtons";
-import { useAuth } from "../contexts";
+import { useAuth } from "../contexts/AuthContext";
 import { Link } from "react-router-dom";
 
 const navigation = [

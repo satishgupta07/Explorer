@@ -14,9 +14,9 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const _token = localStorage.getItem("token");
-    const _user = localStorage.getItem("user");
+    const _user = JSON.parse(localStorage.getItem("user"));
     console.log("Token : " + _token);
-    console.log("User : " + _user);
+    console.log(_user);
     if (_token && _user?._id) {
       setUser(_user);
       setToken(_token);

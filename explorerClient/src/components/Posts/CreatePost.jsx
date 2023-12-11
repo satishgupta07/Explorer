@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import conf from "../../config/conf";
-import { useAuth } from "../../contexts";
+import { useAuth } from "../../contexts/AuthContext";
+import { usePost } from "../../contexts/PostContext";
 
 function CreatePost() {
   const [showModal, setShowModal] = useState(false);
@@ -9,7 +10,8 @@ function CreatePost() {
   const [url, setUrl] = useState("");
   const { user, token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
-  const _user = JSON.parse(user || localStorage.getItem("user"));
+  const _user = user || localStorage.getItem("user");
+  const { setPosts } = usePost();
 
   useEffect(() => {
     if (url) {
@@ -32,6 +34,7 @@ function CreatePost() {
           } else {
             console.log("Created Post Successfully");
             setShowModal(false);
+            fetchPostsAgain();
             // history.push("/");
           }
         })
@@ -59,6 +62,19 @@ function CreatePost() {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const fetchPostsAgain = async () => {
+    // Fetch posts from the API
+    const postsResponse = await fetch("http://localhost:3333/api/v1/posts/", {
+      headers: {
+        Authorization: "Bearer " + jwtToken,
+      },
+    });
+
+    const postsData = await postsResponse.json();
+    console.log(postsData);
+    setPosts(postsData.posts);
   };
 
   return (

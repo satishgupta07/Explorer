@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authenticateLogin } from "../services/auth";
 import Swal from "sweetalert2";
-import { useAuth } from "../contexts";
+import { useAuth } from "../contexts/AuthContext";
 
 function Login() {
   const [loginData, setLoginData] = useState({

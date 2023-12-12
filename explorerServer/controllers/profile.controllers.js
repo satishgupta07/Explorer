@@ -45,7 +45,58 @@ const getUserProfile = async (req, res) => {
     })
   );
 
-  return res.status(200).json(new ApiResponse(200, {user, posts: postsWithLikeCount}, "User profile fetched successfully"));
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { user, posts: postsWithLikeCount },
+        "User profile fetched successfully"
+      )
+    );
 };
 
-export { getUserProfile };
+const followAndUnfollowUser = async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findById(req.user._id);
+  
+  // Check if the user to follow/unfollow exists
+  const userToFollow = await User.findById(userId);
+  if (!userToFollow) {
+    throw new ApiError(404, "User not found");
+  }
+
+  try {
+    // Check if the user is already following the target user
+    const isFollowing = user.following.includes(userId);
+    console.log(isFollowing);
+    if (isFollowing) {
+      // Unfollow the user
+      user.following.pull(userId);
+      userToFollow.followers.pull(req.user._id);
+    } else {
+      // Follow the user
+      user.following.push(userId);
+      userToFollow.followers.push(req.user._id);
+    }
+
+    // Save changes to both users
+    await user.save();
+    await userToFollow.save();
+
+    // Respond with success message
+    const message = isFollowing
+      ? "Unfollowed successfully"
+      : "Followed successfully";
+    res.status(200).json({
+      success: true,
+      message,
+    });
+  } catch (error) {
+    // Handle potential errors, e.g., database errors
+    throw new ApiError(500, "Internal Server Error");
+  }
+};
+
+export { getUserProfile, followAndUnfollowUser };

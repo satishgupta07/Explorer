@@ -5,6 +5,7 @@ import PostCard from "../components/Posts/PostCard";
 
 function UserProfile() {
   const [profile, setProfile] = useState(null);
+  const [followButton, setFollowButton] = useState("Follow");
   const { userid } = useParams();
   const { token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
@@ -17,10 +18,39 @@ function UserProfile() {
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
         setProfile(result.data);
       });
   }, []);
+
+  const handleFollow = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3333/api/v1/users/follow-user/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + jwtToken,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to follow/unfollow user: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      if (data) {
+        if(data.message == "Unfollowed successfully") {
+          setFollowButton("Follow");
+        } else {
+          setFollowButton("Unfollow");
+        }
+      } 
+    } catch (error) {
+      console.error("Error while follow/unfollow user:", error);
+    }
+  };
 
   return (
     <>
@@ -54,9 +84,15 @@ function UserProfile() {
                 }}
               >
                 <h6>{profile.posts.length} posts</h6>
-                <h6>40 followers</h6>
-                <h6>40 following</h6>
+                <h6>{profile.user.followers.length} followers</h6>
+                <h6>{profile.user.following.length} following</h6>
               </div>
+              <button
+                className="mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2"
+                onClick={() => handleFollow(profile.user._id)}
+              >
+                {followButton}
+              </button>
             </div>
           </div>
 

@@ -14,6 +14,20 @@ const getUserProfile = async (req, res) => {
     throw new ApiError(404, "User does not exist");
   }
 
+  console.log(req.user._id);
+
+  const isUserInFollowers = user.followers.includes(req.user._id);
+
+  const followers = await User.find(
+    { _id: { $in: user.followers } },
+    "_id name"
+  );
+
+  const following = await User.find(
+    { _id: { $in: user.following } },
+    "_id name"
+  );
+
   const posts = await Post.find({ postedBy: userId }).populate(
     "postedBy",
     "_id name"
@@ -45,22 +59,26 @@ const getUserProfile = async (req, res) => {
     })
   );
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { user, posts: postsWithLikeCount },
-        "User profile fetched successfully"
-      )
-    );
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user,
+        posts: postsWithLikeCount,
+        isUserInFollowers,
+        followers,
+        following,
+      },
+      "User profile fetched successfully"
+    )
+  );
 };
 
 const followAndUnfollowUser = async (req, res) => {
   const { userId } = req.params;
 
   const user = await User.findById(req.user._id);
-  
+
   // Check if the user to follow/unfollow exists
   const userToFollow = await User.findById(userId);
   if (!userToFollow) {
@@ -70,7 +88,6 @@ const followAndUnfollowUser = async (req, res) => {
   try {
     // Check if the user is already following the target user
     const isFollowing = user.following.includes(userId);
-    console.log(isFollowing);
     if (isFollowing) {
       // Unfollow the user
       user.following.pull(userId);

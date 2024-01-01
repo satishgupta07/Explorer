@@ -11,6 +11,10 @@ function UserProfile() {
   const jwtToken = token || localStorage.getItem("token");
 
   useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = () => {
     fetch(`http://localhost:3333/api/v1/users/profile/${userid}`, {
       headers: {
         Authorization: "Bearer " + jwtToken,
@@ -18,9 +22,15 @@ function UserProfile() {
     })
       .then((res) => res.json())
       .then((result) => {
+        console.log(result.data);
         setProfile(result.data);
+        if (result.data.isUserInFollowers) {
+          setFollowButton("Unfollow");
+        } else {
+          setFollowButton("Follow");
+        }
       });
-  }, []);
+  };
 
   const handleFollow = async (userId) => {
     try {
@@ -36,17 +46,20 @@ function UserProfile() {
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to follow/unfollow user: ${response.statusText}`);
+        throw new Error(
+          `Failed to follow/unfollow user: ${response.statusText}`
+        );
       }
 
       const data = await response.json();
       if (data) {
-        if(data.message == "Unfollowed successfully") {
+        if (data.message == "Unfollowed successfully") {
           setFollowButton("Follow");
         } else {
           setFollowButton("Unfollow");
         }
-      } 
+        fetchProfile();
+      }
     } catch (error) {
       console.error("Error while follow/unfollow user:", error);
     }
@@ -84,8 +97,8 @@ function UserProfile() {
                 }}
               >
                 <h6>{profile.posts.length} posts</h6>
-                <h6>{profile.user.followers.length} followers</h6>
-                <h6>{profile.user.following.length} following</h6>
+                <h6>{profile.followers.length} followers</h6>
+                <h6>{profile.following.length} following</h6>
               </div>
               <button
                 className="mt-10 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2"

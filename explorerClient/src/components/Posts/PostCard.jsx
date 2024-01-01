@@ -114,7 +114,9 @@ function PostCard({ post }) {
           <div
             className="flex items-center gap-x-1 cursor-pointer"
             onClick={() => {
-              navigate(`profile/${post.postedBy._id}`);
+              _user._id === post.postedBy._id
+                ? navigate(`/profile`)
+                : navigate(`/profile/${post.postedBy._id}`);
             }}
           >
             {post.postedBy.name}

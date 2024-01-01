@@ -34,6 +34,7 @@ function CreatePost() {
           } else {
             console.log("Created Post Successfully");
             setShowModal(false);
+            resetForm();
             fetchPostsAgain();
             // history.push("/");
           }
@@ -75,6 +76,29 @@ function CreatePost() {
     const postsData = await postsResponse.json();
     console.log(postsData);
     setPosts(postsData.posts);
+  };
+
+  const handleImageChange = (e) => {
+    const selectedImage = e.target.files[0];
+
+    // Check if an image is selected
+    if (selectedImage) {
+      const reader = new FileReader();
+
+      // Set up the FileReader to read the selected image
+      reader.onload = (event) => {
+        const imageUrl = event.target.result;
+        setImage(imageUrl);
+      };
+
+      // Read the selected image as a data URL
+      reader.readAsDataURL(selectedImage);
+    }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setImage("");
   };
 
   return (
@@ -124,7 +148,10 @@ function CreatePost() {
                   <h3 className="text-3xl font-semibold">Create Post</h3>
                   <button
                     className="text-3xl"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                      setShowModal(false);
+                      resetForm();
+                    }}
                   >
                     <span className="">×</span>
                   </button>
@@ -149,35 +176,45 @@ function CreatePost() {
                       onChange={(e) => setTitle(e.target.value)}
                     ></textarea>
                   </div>
-                  <div className="mt-4 relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group ">
-                    <div className="w-full h-full rounded-md flex flex-col items-center justify-center dark:group-hover:bg-[#47494A] relative bg-[#EAEBED]/60 group-hover:bg-[#d9dadc]/60 dark:bg-inherit ">
-                      <div>
-                        <svg
-                          stroke="currentColor"
-                          fill="currentColor"
-                          strokeWidth="0"
-                          viewBox="0 0 24 24"
-                          className="w-10 h-10 rounded-full dark:bg-[#5A5C5C] p-1.5 text-black/60 bg-[#D8DADF] "
-                          height="1em"
-                          width="1em"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path fill="none" d="M0 0h24v24H0z"></path>
-                          <path d="M19 7v2.99s-1.99.01-2 0V7h-3s.01-1.99 0-2h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"></path>
-                        </svg>
-                      </div>
-                      <div className="font-semibold text-[18px] leading-5 text-black/60 dark:text-white/60 ">
-                        Add photos
-                      </div>
-                      <span className="text-[12px] text-[#949698] dark:text-[#b0b3b8] ">
-                        or drag and drop
-                      </span>
+                  <div className="mt-4 relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group">
+                    <div className="w-full h-full rounded-md flex flex-col items-center justify-center dark:group-hover:bg-[#47494A] relative bg-[#EAEBED]/60 group-hover:bg-[#d9dadc]/60 dark:bg-inherit">
+                      {image ? (
+                        <img
+                          src={image}
+                          alt="Preview"
+                          className="w-full h-full rounded-md object-cover"
+                        />
+                      ) : (
+                        <>
+                          <div>
+                            <svg
+                              stroke="currentColor"
+                              fill="currentColor"
+                              strokeWidth="0"
+                              viewBox="0 0 24 24"
+                              className="w-10 h-10 rounded-full dark:bg-[#5A5C5C] p-1.5 text-black/60 bg-[#D8DADF] "
+                              height="1em"
+                              width="1em"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path fill="none" d="M0 0h24v24H0z"></path>
+                              <path d="M19 7v2.99s-1.99.01-2 0V7h-3s.01-1.99 0-2h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v8h-3zM5 19l3-4 2 3 3-4 4 5H5z"></path>
+                            </svg>
+                          </div>
+                          <div className="font-semibold text-[18px] leading-5 text-black/60 dark:text-white/60">
+                            Add photos
+                          </div>
+                          <span className="text-[12px] text-[#949698] dark:text-[#b0b3b8]">
+                            or drag and drop
+                          </span>
+                        </>
+                      )}
                     </div>
                     <input
                       type="file"
                       accept="image/*"
-                      className="absolute w-full h-full top-0 left-0 z-[201] cursor-pointer opacity-0 "
-                      onChange={(e) => setImage(e.target.files[0])}
+                      className="absolute w-full h-full top-0 left-0 z-[201] cursor-pointer opacity-0"
+                      onChange={handleImageChange}
                     />
                   </div>
                 </div>

@@ -10,7 +10,7 @@ function ProfilePage() {
   const _user = user || localStorage.getItem("user");
 
   useEffect(() => {
-    fetch("http://localhost:3333/api/v1/posts/myposts", {
+    fetch("https://explorer-server.onrender.com/api/v1/posts/myposts", {
       headers: {
         Authorization: "Bearer " + jwtToken,
       },

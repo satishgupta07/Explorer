@@ -11,7 +11,7 @@ function Posts() {
   const {posts, setPosts} = usePost();
 
   useEffect(() => {
-    fetch("http://localhost:3333/api/v1/posts/", {
+    fetch("https://explorer-server.onrender.com/api/v1/posts/", {
       headers: {
         Authorization: "Bearer " + jwtToken,
       },

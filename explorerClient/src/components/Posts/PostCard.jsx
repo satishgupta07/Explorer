@@ -20,7 +20,7 @@ function PostCard({ post }) {
   const handleLike = async (_id) => {
     try {
       const response = await fetch(
-        `http://localhost:3333/api/v1/posts/post/${_id}`,
+        `https://explorer-server.onrender.com/api/v1/posts/post/${_id}`,
         {
           method: "POST",
           headers: {
@@ -52,7 +52,7 @@ function PostCard({ post }) {
     }
     try {
       const response = await fetch(
-        `http://localhost:3333/api/v1/comments/post/${_id}`,
+        `https://explorer-server.onrender.com/api/v1/comments/post/${_id}`,
         {
           method: "POST",
           headers: {
@@ -80,7 +80,7 @@ function PostCard({ post }) {
 
   const deletePost = (postId) => {
     console.log(postId);
-    fetch(`http://localhost:3333/api/v1/posts/deletepost/${postId}`, {
+    fetch(`https://explorer-server.onrender.com/api/v1/posts/deletepost/${postId}`, {
       method: "delete",
       headers: {
         Authorization: "Bearer " + jwtToken,

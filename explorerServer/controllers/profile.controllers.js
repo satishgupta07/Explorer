@@ -14,8 +14,6 @@ const getUserProfile = async (req, res) => {
     throw new ApiError(404, "User does not exist");
   }
 
-  console.log(req.user._id);
-
   const isUserInFollowers = user.followers.includes(req.user._id);
 
   const followers = await User.find(

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "http://localhost:3333";
+const URL = "https://explorer-server.onrender.com";
 
 export const registerUser = async (data) => {
   try {

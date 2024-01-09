@@ -1,9 +1,9 @@
-import { Comment } from "../models/comment.models.js";
-import { SocialLike } from "../models/like.models.js";
-import { Post } from "../models/post.models.js";
-import { User } from "../models/user.models.js";
-import { ApiError } from "../services/ApiError.js";
-import { ApiResponse } from "../services/ApiResponse.js";
+import { Comment } from "../models/comment.model.js";
+import { SocialLike } from "../models/like.model.js";
+import { Post } from "../models/post.model.js";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const getUserProfile = async (req, res) => {
   const { userId } = req.params;

@@ -1,7 +1,7 @@
-import { SocialLike } from "../models/like.models.js";
-import { Post } from "../models/post.models.js";
-import { ApiError } from "../services/ApiError.js";
-import { ApiResponse } from "../services/ApiResponse.js";
+import { SocialLike } from "../models/like.model.js";
+import { Post } from "../models/post.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const likeDislikePost = async (req, res) => {
   const { postId } = req.params;

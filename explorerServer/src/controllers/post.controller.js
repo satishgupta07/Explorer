@@ -1,9 +1,9 @@
 import Joi from "joi";
-import { Post } from "../models/post.models.js";
-import { SocialLike } from "../models/like.models.js";
-import { Comment } from "../models/comment.models.js";
-import { ApiError } from "../services/ApiError.js";
-import { ApiResponse } from "../services/ApiResponse.js";
+import { Post } from "../models/post.model.js";
+import { SocialLike } from "../models/like.model.js";
+import { Comment } from "../models/comment.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createPost = async (req, res, next) => {
   // Validation

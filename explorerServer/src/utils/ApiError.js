@@ -1,15 +1,6 @@
-/**
- * @description Common Error class to throw an error from anywhere.
- * The {@link errorHandler} middleware will catch this error at the central place and it will return an appropriate response to the client
- */
+/*  Represents custom errors in an API context.
+    Inherits from the built-in Error class.  */
 class ApiError extends Error {
-  /**
-   *
-   * @param {number} statusCode
-   * @param {string} message
-   * @param {any[]} errors
-   * @param {string} stack
-   */
   constructor(
     statusCode,
     message = "Something went wrong",

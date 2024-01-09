@@ -1,5 +1,5 @@
-import { Comment } from "../models/comment.models.js";
-import { ApiResponse } from "../services/ApiResponse.js";
+import { Comment } from "../models/comment.model.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const addComment = async (req, res) => {
   const { postId } = req.params;

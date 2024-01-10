@@ -6,10 +6,12 @@ export default function AuthLayout({ children, authentication = true }) {
   const navigate = useNavigate();
   const [loader, setLoader] = useState(true);
   const { user, token, logout } = useAuth();
+  const jwtToken = token || localStorage.getItem("token");
+  const _user = user || localStorage.getItem("user");
 
   useEffect(() => {
     let authStatus;
-    if (user && token) {
+    if (_user && jwtToken) {
       authStatus = true;
     } else {
       authStatus = false;

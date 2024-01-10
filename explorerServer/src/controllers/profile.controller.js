@@ -28,7 +28,7 @@ const getUserProfile = async (req, res) => {
 
   const posts = await Post.find({ postedBy: userId }).populate(
     "postedBy",
-    "_id name"
+    "_id name avatar"
   );
   const postsWithLikeCount = await Promise.all(
     posts.map(async (post) => {

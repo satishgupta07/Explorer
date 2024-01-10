@@ -38,7 +38,7 @@ const createPost = async (req, res, next) => {
 
 const getAllPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find().populate("postedBy", "_id name");
+    const posts = await Post.find().populate("postedBy", "_id name avatar");
     const postsWithLikeCount = await Promise.all(
       posts.map(async (post) => {
         const likeCount = await SocialLike.countDocuments({ postId: post._id });
@@ -75,7 +75,7 @@ const getMyPosts = async (req, res, next) => {
   try {
     const posts = await Post.find({ postedBy: req.user._id }).populate(
       "postedBy",
-      "_id name"
+      "_id name avatar"
     );
     const postsWithLikeCount = await Promise.all(
       posts.map(async (post) => {

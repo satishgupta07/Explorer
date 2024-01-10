@@ -41,7 +41,7 @@ function ProfilePage() {
         <div>
           <img
             style={{ width: "160px", height: "160px", borderRadius: "80px" }}
-            src="https://images.unsplash.com/photo-1555952517-2e8e729e0b44?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+            src={_user.avatar}
           />
         </div>
         <div>

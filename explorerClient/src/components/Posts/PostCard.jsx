@@ -102,7 +102,7 @@ function PostCard({ post }) {
       <div className="flex items-center pl-2 pr-3 sm:px-3 md:px-4">
         {/* avatar */}
         <img
-          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+          src={post.postedBy.avatar}
           alt="avatar"
           className="w-10 h-10 rounded-full object-cover cursor-pointer "
           // onClick={() => {
@@ -191,7 +191,7 @@ function PostCard({ post }) {
       </div>
       <div className="flex gap-x-1.5 px-2 sm:px-3 md:px-4 py-1 items-center mt-2">
         <img
-          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+          src={_user.avatar}
           alt="user_avatar"
           className="w-8 sm:w-9 h-8 sm:h-9 object-cover shrink-0 rounded-full "
         />

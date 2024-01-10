@@ -19,6 +19,7 @@ function Posts() {
         });
         if (response.ok) {
           const result = await response.json();
+          console.log(result);
           setPosts(result.posts);
         } else {
           // Handle error scenarios

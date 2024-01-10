@@ -67,11 +67,14 @@ function CreatePost() {
 
   const fetchPostsAgain = async () => {
     // Fetch posts from the API
-    const postsResponse = await fetch("https://explorer-server.onrender.com/api/v1/posts/", {
-      headers: {
-        Authorization: "Bearer " + jwtToken,
-      },
-    });
+    const postsResponse = await fetch(
+      "https://explorer-server.onrender.com/api/v1/posts/",
+      {
+        headers: {
+          Authorization: "Bearer " + jwtToken,
+        },
+      }
+    );
 
     const postsData = await postsResponse.json();
     console.log(postsData);
@@ -109,7 +112,7 @@ function CreatePost() {
       >
         <img
           className="flex aspect-square h-10 w-10 shrink-0 rounded-full object-cover"
-          src="https://images.pexels.com/photos/7775642/pexels-photo-7775642.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+          src={_user.avatar}
           alt="avatar"
         />
         <input
@@ -161,7 +164,7 @@ function CreatePost() {
                   <div className="flex items-center">
                     <img
                       className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src={_user.avatar}
                       alt=""
                     />
                     <h2 className="ml-4">{_user.name}</h2>

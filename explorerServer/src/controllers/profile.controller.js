@@ -36,7 +36,7 @@ const getUserProfile = async (req, res) => {
       const commentCount = await Comment.countDocuments({ postId: post._id });
       const comments = await Comment.find({ postId: post._id }).populate(
         "author",
-        "_id name"
+        "_id name avatar"
       );
       const isLiked = await SocialLike.exists({
         postId: post._id,

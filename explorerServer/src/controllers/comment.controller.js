@@ -1,7 +1,8 @@
 import { Comment } from "../models/comment.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const addComment = async (req, res) => {
+const addComment = asyncHandler(async (req, res) => {
   const { postId } = req.params;
   const { content } = req.body;
 
@@ -14,6 +15,6 @@ const addComment = async (req, res) => {
   return res
     .status(201)
     .json(new ApiResponse(201, comment, "Comment added successfully"));
-};
+});
 
 export { addComment };

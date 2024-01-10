@@ -45,7 +45,7 @@ const getAllPosts = async (req, res, next) => {
         const commentCount = await Comment.countDocuments({ postId: post._id });
         const comments = await Comment.find({ postId: post._id }).populate(
           "author",
-          "_id name"
+          "_id name avatar"
         );
         const isLiked = await SocialLike.exists({
           postId: post._id,
@@ -83,7 +83,7 @@ const getMyPosts = async (req, res, next) => {
         const commentCount = await Comment.countDocuments({ postId: post._id });
         const comments = await Comment.find({ postId: post._id }).populate(
           "author",
-          "_id name"
+          "_id name avatar"
         );
         const isLiked = await SocialLike.exists({
           postId: post._id,

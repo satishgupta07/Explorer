@@ -6,7 +6,7 @@ function Comment({ comment }) {
     <div className="flex p-4 border-b">
       <div className="h-8 w-8 shrink-0 sm:h-9 sm:w-9">
         <img
-          src="https://images.pexels.com/photos/7775642/pexels-photo-7775642.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+          src={comment.author.avatar}
           alt="Aurora Starlight"
           className="h-full w-full rounded-full object-cover"
         />

@@ -1,28 +1,53 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/auth";
+import Swal from "sweetalert2";
 
 const signupInitialValues = {
   name: "",
   email: "",
   password: "",
   confirm_password: "",
+  avatar: "",
 };
 
 function Register() {
+  const navigate = useNavigate();
   const [signup, setSignup] = useState(signupInitialValues);
+  const [loading, setLoading] = useState(false);
 
   const onInputChange = (e) => {
     setSignup({ ...signup, [e.target.name]: e.target.value });
   };
 
+  // Handle file input separately
+  const onFileChange = (e) => {
+    setSignup({ ...signup, avatar: e.target.files[0] });
+  };
+
   const signupUser = async (e) => {
     e.preventDefault();
-    let response = await registerUser(signup);
-    console.log(response);
-    alert('Signup Successfull');
-    if (!response) {
-      return;
+    setLoading(true); // Set loading state to true
+
+    try {
+      const formData = new FormData();
+      Object.entries(signup).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      let response = await registerUser(formData);
+      console.log(response);
+      if (response.data.success) {
+        Swal.fire({
+          title: "User Registered Successfully !!",
+          icon: "success",
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Error while registering user !!", error);
+    } finally {
+      setLoading(false); // Set loading state to false after the request is complete
     }
   };
 
@@ -80,7 +105,28 @@ function Register() {
                   />
                 </div>
               </div>
-
+              <div>
+                <label
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                  htmlFor="avatar"
+                >
+                  Upload file
+                </label>
+                <div className="mt-2">
+                  <input
+                    className="flex h-11 p-1 w-full rounded-md border border-gray-300 bg-transparent file:me-4 file:py-2 file:px-4
+                      file:rounded-lg file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-600 file:text-white
+                      hover:file:bg-blue-700
+                      file:disabled:opacity-50 file:disabled:pointer-events-none"
+                    aria-describedby="file_input_help"
+                    type="file"
+                    name="avatar"
+                    onChange={onFileChange}
+                  />
+                </div>
+              </div>
               <div>
                 <div className="flex items-center justify-between">
                   <label
@@ -128,8 +174,9 @@ function Register() {
                 <button
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  disabled={loading} // Disable the button while loading
                 >
-                  Sign Up
+                  {loading ? "Signing Up..." : "Sign Up"}
                 </button>
               </div>
             </form>

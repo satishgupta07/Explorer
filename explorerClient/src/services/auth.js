@@ -1,12 +1,17 @@
 import axios from "axios";
 
-const URL = "https://explorer-server.onrender.com";
+const URL = "http://localhost:3333";
 
 export const registerUser = async (data) => {
   try {
-    return await axios.post(`${URL}/api/v1/users/register`, data);
+    return await axios.post(`${URL}/api/v1/users/register`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   } catch (error) {
     console.log("Error while registering user !!", error);
+    throw error;
   }
 };
 

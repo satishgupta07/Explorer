@@ -15,7 +15,7 @@ function CreatePost() {
 
   useEffect(() => {
     if (url) {
-      fetch("http://localhost:3333/api/v1/posts/create-post", {
+      fetch(`${conf.serverUrl}/posts/create-post`, {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -67,14 +67,11 @@ function CreatePost() {
 
   const fetchPostsAgain = async () => {
     // Fetch posts from the API
-    const postsResponse = await fetch(
-      "https://explorer-server.onrender.com/api/v1/posts/",
-      {
-        headers: {
-          Authorization: "Bearer " + jwtToken,
-        },
-      }
-    );
+    const postsResponse = await fetch(`${conf.serverUrl}/posts/`, {
+      headers: {
+        Authorization: "Bearer " + jwtToken,
+      },
+    });
 
     const postsData = await postsResponse.json();
     console.log(postsData);

@@ -3,6 +3,7 @@ import CreatePost from "./CreatePost";
 import { useAuth } from "../../contexts/AuthContext";
 import PostCard from "./PostCard";
 import { usePost } from "../../contexts/PostContext";
+import conf from "../../config/conf";
 
 function Posts() {
   const { token, user } = useAuth();
@@ -12,7 +13,7 @@ function Posts() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:3333/api/v1/posts/", {
+        const response = await fetch(`${conf.serverUrl}/posts/`, {
           headers: {
             Authorization: "Bearer " + jwtToken,
           },

@@ -1,13 +1,12 @@
 import axios from "axios";
-
-const URL = "https://explorer-server.onrender.com";
+import conf from "../config/conf";
 
 export const createPost = async (data, jwtToken) => {
   try {
-    return await axios.post(`${URL}/api/v1/posts/create-post`, data, {
+    return await axios.post(`${conf.serverUrl}/posts/create-post`, data, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + jwtToken
+        Authorization: "Bearer " + jwtToken,
       },
     });
   } catch (error) {
@@ -17,10 +16,10 @@ export const createPost = async (data, jwtToken) => {
 
 export const myPosts = async (jwtToken) => {
   try {
-    return await axios.get(`${URL}/api/v1/posts/myposts`, {
+    return await axios.get(`${conf.serverUrl}/posts/myposts`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + jwtToken
+        Authorization: "Bearer " + jwtToken,
       },
     });
   } catch (error) {

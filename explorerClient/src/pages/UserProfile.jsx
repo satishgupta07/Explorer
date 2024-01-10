@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import PostCard from "../components/Posts/PostCard";
+import conf from "../config/conf";
 
 function UserProfile() {
   const [profile, setProfile] = useState(null);
@@ -15,7 +16,7 @@ function UserProfile() {
   }, []);
 
   const fetchProfile = () => {
-    fetch(`http://localhost:3333/api/v1/users/profile/${userid}`, {
+    fetch(`${conf.serverUrl}/users/profile/${userid}`, {
       headers: {
         Authorization: "Bearer " + jwtToken,
       },
@@ -35,7 +36,7 @@ function UserProfile() {
   const handleFollow = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:3333/api/v1/users/follow-user/${userId}`,
+        `${conf.serverUrl}/users/follow-user/${userId}`,
         {
           method: "POST",
           headers: {

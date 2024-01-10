@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
 import PostCard from "../components/Posts/PostCard";
+import conf from "../config/conf";
 
 function ProfilePage() {
   const [posts, setPosts] = useState([]);
@@ -12,7 +13,7 @@ function ProfilePage() {
   useEffect(() => {
     // Check if both token and user are available
     if (jwtToken && _user) {
-      fetch("http://localhost:3333/api/v1/posts/myposts", {
+      fetch(`${conf.serverUrl}/posts/myposts`, {
         headers: {
           Authorization: "Bearer " + jwtToken,
         },

@@ -1,10 +1,9 @@
 import axios from "axios";
-
-const URL = "http://localhost:3333";
+import conf from "../config/conf";
 
 export const registerUser = async (data) => {
   try {
-    return await axios.post(`${URL}/api/v1/users/register`, data, {
+    return await axios.post(`${conf.serverUrl}/users/register`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -17,7 +16,7 @@ export const registerUser = async (data) => {
 
 export const authenticateLogin = async (data) => {
   try {
-    return await axios.post(`${URL}/api/v1/users/login`, data);
+    return await axios.post(`${conf.serverUrl}/users/login`, data);
   } catch (error) {
     console.log("Error while login !!", error);
   }

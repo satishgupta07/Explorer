@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import Comment from "./Comment";
 import { usePost } from "../../contexts/PostContext";
 import { useNavigate } from "react-router-dom";
+import conf from "../../config/conf";
 
 function PostCard({ post }) {
   const [isLiked, setIsLiked] = useState(post.isLiked);
@@ -19,16 +20,13 @@ function PostCard({ post }) {
 
   const handleLike = async (_id) => {
     try {
-      const response = await fetch(
-        `http://localhost:3333/api/v1/posts/post/${_id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + jwtToken,
-          },
-        }
-      );
+      const response = await fetch(`${conf.serverUrl}/posts/post/${_id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + jwtToken,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to like/dislike post: ${response.statusText}`);
@@ -51,17 +49,14 @@ function PostCard({ post }) {
       return;
     }
     try {
-      const response = await fetch(
-        `http://localhost:3333/api/v1/comments/post/${_id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + jwtToken,
-          },
-          body: JSON.stringify({ content: textComment }),
-        }
-      );
+      const response = await fetch(`${conf.serverUrl}/comments/post/${_id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + jwtToken,
+        },
+        body: JSON.stringify({ content: textComment }),
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to comment on post: ${response.statusText}`);
@@ -80,7 +75,7 @@ function PostCard({ post }) {
 
   const deletePost = (postId) => {
     console.log(postId);
-    fetch(`http://localhost:3333/api/v1/posts/deletepost/${postId}`, {
+    fetch(`${conf.serverUrl}/posts/deletepost/${postId}`, {
       method: "delete",
       headers: {
         Authorization: "Bearer " + jwtToken,

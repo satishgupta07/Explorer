@@ -6,38 +6,37 @@ import { useAuth } from "../contexts/AuthContext";
 
 function Login() {
   const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
-  })
+    email: "",
+    password: "",
+  });
 
   const navigate = useNavigate();
-  const {setUser, setToken} = useAuth();
-  
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  }
+  };
 
   const loginUser = async (e) => {
     e.preventDefault();
-    let response = await authenticateLogin(loginData);
-    localStorage.setItem("token",response.data.access_token);
-    localStorage.setItem("user",JSON.stringify(response.data.user));
-    setToken(response.data.access_token);
-    setUser(response.data.user);
-    if(response.status === 200) {
+
+    try {
+      let response = await authenticateLogin(loginData);
+      console.log(response.data.data);
+      login(response.data.data);
       Swal.fire({
-        title: "User LoggedIn Successfully !!",
-        icon: "success"
+        title: "User Logged In Successfully !!",
+        icon: "success",
       });
       navigate("/");
-    } else {
+    } catch (error) {
+      console.error("Login error:", error);
       Swal.fire({
-        title: "Something went wrong !!",
-        icon: "error"
+        title: "Something went wrong",
+        icon: "error",
       });
     }
-  }
+  };
 
   return (
     <div className="bg-gray-200 flex justify-center items-center">

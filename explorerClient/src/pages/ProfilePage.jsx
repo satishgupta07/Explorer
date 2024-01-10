@@ -4,23 +4,29 @@ import { useState } from "react";
 import PostCard from "../components/Posts/PostCard";
 
 function ProfilePage() {
-  const [post, setPost] = useState([]);
+  const [posts, setPosts] = useState([]);
   const { token, user } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
-  const _user = user || localStorage.getItem("user");
+  const _user = user || JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    fetch("https://explorer-server.onrender.com/api/v1/posts/myposts", {
-      headers: {
-        Authorization: "Bearer " + jwtToken,
-      },
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        console.log(result);
-        setPost(result.posts);
-      });
-  }, []);
+    // Check if both token and user are available
+    if (jwtToken && _user) {
+      fetch("http://localhost:3333/api/v1/posts/myposts", {
+        headers: {
+          Authorization: "Bearer " + jwtToken,
+        },
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          console.log(result);
+          setPosts(result.posts);
+        })
+        .catch((error) => {
+          console.error("Error fetching posts:", error);
+        });
+    }
+  }, [jwtToken, _user]);
 
   return (
     <div style={{ maxWidth: "550px", margin: "0px auto" }}>
@@ -47,7 +53,7 @@ function ProfilePage() {
               width: "108%",
             }}
           >
-            <h6>{post.length} posts</h6>
+            <h6>{posts.length} posts</h6>
             <h6>{_user.followers.length} followers</h6>
             <h6>{_user.following.length} following</h6>
           </div>
@@ -55,7 +61,7 @@ function ProfilePage() {
       </div>
 
       <div className="gallery">
-        {post.map((item) => {
+        {posts.map((item) => {
           return <PostCard key={item._id} post={item} />;
         })}
       </div>

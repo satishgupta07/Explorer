@@ -15,7 +15,7 @@ function CreatePost() {
 
   useEffect(() => {
     if (url) {
-      fetch("https://explorer-server.onrender.com/api/v1/posts/create-post", {
+      fetch("http://localhost:3333/api/v1/posts/create-post", {
         method: "post",
         headers: {
           "Content-Type": "application/json",

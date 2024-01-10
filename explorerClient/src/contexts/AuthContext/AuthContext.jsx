@@ -29,10 +29,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    console.log(userData);
     const { user, accessToken, refreshToken } = userData;
 
-    console.log(accessToken);
     // Set user and tokens in state
     setUser(user);
     setToken(accessToken);

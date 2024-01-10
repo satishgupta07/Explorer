@@ -10,9 +10,6 @@ function Posts() {
   const { posts, setPosts } = usePost();
 
   useEffect(() => {
-    console.log(user);
-    console.log(token);
-    console.log(jwtToken);
     const fetchPosts = async () => {
       try {
         const response = await fetch("http://localhost:3333/api/v1/posts/", {

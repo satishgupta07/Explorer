@@ -9,14 +9,12 @@ function classNames(...classes) {
 }
 
 function Profile() {
-  const {setUser, setToken} = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     try {
-      setUser(null);
-      setToken(null);
-      localStorage.clear(); // Clear local storage on logout
+      logout();
       navigate("/login");
     } catch (error) {
       console.log(error);

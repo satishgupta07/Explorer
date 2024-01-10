@@ -15,7 +15,7 @@ function UserProfile() {
   }, []);
 
   const fetchProfile = () => {
-    fetch(`https://explorer-server.onrender.com/api/v1/users/profile/${userid}`, {
+    fetch(`http://localhost:3333/api/v1/users/profile/${userid}`, {
       headers: {
         Authorization: "Bearer " + jwtToken,
       },
@@ -35,7 +35,7 @@ function UserProfile() {
   const handleFollow = async (userId) => {
     try {
       const response = await fetch(
-        `https://explorer-server.onrender.com/api/v1/users/follow-user/${userId}`,
+        `http://localhost:3333/api/v1/users/follow-user/${userId}`,
         {
           method: "POST",
           headers: {

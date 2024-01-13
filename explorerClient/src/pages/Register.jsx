@@ -35,6 +35,8 @@ function Register() {
         formData.append(key, value);
       });
 
+      console.log(formData);
+
       let response = await registerUser(formData);
       console.log(response);
       if (response.data.success) {

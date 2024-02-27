@@ -1,16 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CreatePost from "./CreatePost";
 import { useAuth } from "../../contexts/AuthContext";
 import PostCard from "./PostCard";
 import { usePost } from "../../contexts/PostContext";
 import conf from "../../config/conf";
+import Loader from "../Loader";
 
 function Posts() {
+  const [loading, setLoading] = useState(true);
   const { token, user } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
   const { posts, setPosts } = usePost();
 
   useEffect(() => {
+    setLoading(true);
     const fetchPosts = async () => {
       try {
         const response = await fetch(`${conf.serverUrl}/posts/`, {
@@ -22,6 +25,7 @@ function Posts() {
           const result = await response.json();
           console.log(result);
           setPosts(result.posts);
+          setLoading(false);
         } else {
           // Handle error scenarios
           console.error("Error fetching posts:", response.statusText);
@@ -37,9 +41,15 @@ function Posts() {
   return (
     <div className="home">
       <CreatePost />
-      {posts.map((item) => (
-        <PostCard key={item._id} post={item} />
-      ))}
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          {posts.map((item) => (
+            <PostCard key={item._id} post={item} />
+          ))}
+        </>
+      )}
     </div>
   );
 }

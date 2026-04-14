@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../services/auth";
+import { registerUser, authenticateLogin } from "../services/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 const INITIAL = { name: "", email: "", password: "", confirm_password: "" };
 
@@ -10,6 +11,7 @@ const INITIAL = { name: "", email: "", password: "", confirm_password: "" };
  */
 function Register() {
   const navigate                 = useNavigate();
+  const { login }                = useAuth();
   const [form,    setForm]       = useState(INITIAL);
   const [avatar,  setAvatar]     = useState(null);        // File object
   const [preview, setPreview]    = useState("");           // data URL for preview
@@ -55,7 +57,16 @@ function Register() {
       data.append("avatar", avatar);
 
       const res = await registerUser(data);
-      if (res.data.success) navigate("/login");
+      if (res.data.success) {
+        // Auto-login so the user lands directly on the feed.
+        const loginRes = await authenticateLogin({ email: form.email, password: form.password });
+        if (loginRes.data.success) {
+          login(loginRes.data.data);
+          navigate("/");
+        } else {
+          navigate("/login");
+        }
+      }
     } catch (err) {
       setError(
         err?.response?.data?.message ?? "Registration failed. Please try again."

@@ -51,13 +51,15 @@ export const AuthProvider = ({ children }) => {
   // Merges updated fields into the stored user object.
   // Called after a successful profile-update API response so the UI
   // reflects the new name / email / avatar without a full re-login.
-  const updateUser = (updatedFields) => {
+  // useCallback keeps the reference stable so consumers (e.g. EditProfileModal)
+  // don't recreate their own handlers on every context render.
+  const updateUser = useCallback((updatedFields) => {
     setUser((prev) => {
       const merged = { ...prev, ...updatedFields };
       localStorage.setItem("user", JSON.stringify(merged));
       return merged;
     });
-  };
+  }, []);
 
   // Called by apiFetch when a silent token refresh succeeds.
   // Keeps the React state in sync with the new token in localStorage.

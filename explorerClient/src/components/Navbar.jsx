@@ -87,7 +87,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 bg-white border-b border-ig-border">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
 
-        {/* ── Logo ──────────────────────────────────────────────────── */}
+        {/* ── Logo — always left ─────────────────────────────────────── */}
         <Link to="/" className="flex items-center gap-2 shrink-0">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-ig-purple to-purple-500 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-5 h-5">
@@ -99,11 +99,14 @@ export default function Navbar() {
           </span>
         </Link>
 
+        {/* Spacer — pushes everything right; hidden when mobile search is open */}
+        {!searchOpen && <div className="flex-1" />}
+
         {/* ── Search box (desktop always visible; mobile toggled) ──── */}
         {isAuth && (
           <div
             ref={searchRef}
-            className={`relative flex-1 transition-all ${searchOpen ? "block" : "hidden md:block"} max-w-xs`}
+            className={`relative transition-all ${searchOpen ? "flex-1" : "hidden md:block md:w-56"}`}
           >
             <div className="relative">
               <svg
@@ -164,9 +167,6 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Spacer pushes right section to the edge on desktop */}
-        <div className="flex-1 md:hidden" />
-
         {/* ── Right section ─────────────────────────────────────────── */}
         <div className="flex items-center gap-1">
           {isAuth ? (
@@ -210,20 +210,6 @@ export default function Navbar() {
                     className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round"
                       d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                  </svg>
-                </Link>
-
-                <Link
-                  to="/profile"
-                  className={`p-2 rounded-lg transition-colors ${isActive("/profile") ? "text-ig-purple" : "text-ig-text hover:bg-gray-100"}`}
-                  title="Profile"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                    fill={isActive("/profile") ? "currentColor" : "none"}
-                    stroke="currentColor" strokeWidth={isActive("/profile") ? 0 : 1.8}
-                    className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </Link>
               </div>

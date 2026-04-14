@@ -168,12 +168,6 @@ const PostCard = memo(function PostCard({ post }) {
           <p className="text-xs text-ig-secondary">{moment(post.createdAt).fromNow()}</p>
         </div>
 
-        {post.title && (
-          <p className="hidden sm:block text-sm text-ig-secondary truncate max-w-[160px]">
-            {post.title}
-          </p>
-        )}
-
         {isOwner && (
           <button
             onClick={handleDelete}

@@ -25,13 +25,13 @@ function Home() {
           </div>
         </aside>
 
-        {/* Center — feed */}
-        <main className="md:col-span-5 min-w-0">
+        {/* Center — feed (widened from 5 → 6 columns) */}
+        <main className="md:col-span-6 min-w-0">
           <Posts />
         </main>
 
-        {/* Right sidebar — hidden on mobile */}
-        <aside className="hidden md:block md:col-span-4 space-y-4">
+        {/* Right sidebar — hidden on mobile (narrowed from 4 → 3 columns) */}
+        <aside className="hidden md:block md:col-span-3 space-y-4">
           <div className="sticky top-20">
             <SuggestedUsers />
           </div>

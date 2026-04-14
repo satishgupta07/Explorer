@@ -1,122 +1,119 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authenticateLogin } from "../services/auth";
-import Swal from "sweetalert2";
 import { useAuth } from "../contexts/AuthContext";
 
+/**
+ * Clean, centered login page inspired by Instagram's auth flow.
+ * Uses local error state instead of SweetAlert2 for inline, accessible feedback.
+ */
 function Login() {
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
-  });
+  const [form,     setForm]     = useState({ email: "", password: "" });
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState("");
 
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleChange = (e) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const loginUser = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError("");
+    setLoading(true);
     try {
-      let response = await authenticateLogin(loginData);
-      console.log(response.data.data);
-      login(response.data.data);
-      Swal.fire({
-        title: "User Logged In Successfully !!",
-        icon: "success",
-      });
+      const res = await authenticateLogin(form);
+      login(res.data.data);
       navigate("/");
-    } catch (error) {
-      console.error("Login error:", error);
-      Swal.fire({
-        title: "Something went wrong",
-        icon: "error",
-      });
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ?? "Invalid credentials. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gray-200 flex justify-center items-center">
-      <div className="flex justify-center items-center lg:w-2/5 md:w-1/2 w-full p-8">
-        <div className="bg-white shadow-lg rounded-lg w-full flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <img
-              className="mx-auto h-10 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              alt="Your Company"
-            />
-            <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Sign in to your account
-            </h2>
+    <div className="min-h-[calc(100vh-56px)] bg-ig-bg flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+
+        {/* Card */}
+        <div className="card-rounded p-8 mb-3">
+          {/* Logo */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-ig-purple to-purple-500 flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-8 h-8">
+                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-ig-text">Explorer</h1>
+            <p className="text-ig-secondary text-sm mt-1">Sign in to see your world</p>
           </div>
 
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6" onSubmit={loginUser}>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    onChange={(e) => handleChange(e)}
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </div>
-              </div>
+          {/* Error banner */}
+          {error && (
+            <div className="mb-4 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 animate-fade-in">
+              {error}
+            </div>
+          )}
 
-              <div>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Password
-                  </label>
-                </div>
-                <div className="mt-2">
-                  <input
-                    id="password"
-                    name="password"
-                    onChange={(e) => handleChange(e)}
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </div>
-              </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Email address"
+                className="input-field"
+              />
+            </div>
+            <div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Password"
+                className="input-field"
+              />
+            </div>
 
-              <div>
-                <button
-                  type="submit"
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Sign In
-                </button>
-              </div>
-            </form>
+            <button
+              type="submit"
+              disabled={loading || !form.email || !form.password}
+              className="btn-primary flex items-center justify-center gap-2 mt-1"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Signing in…
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </form>
+        </div>
 
-            <p className="mt-10 text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-              >
-                Sign Up
-              </Link>
-            </p>
-          </div>
+        {/* Register link */}
+        <div className="card-rounded px-8 py-4 text-center text-sm">
+          Don't have an account?{" "}
+          <Link to="/register" className="font-semibold text-ig-purple hover:text-ig-purple-dark transition-colors">
+            Sign up
+          </Link>
         </div>
       </div>
     </div>

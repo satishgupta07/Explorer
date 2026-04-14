@@ -6,13 +6,17 @@ const userSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    // Cloudinary URL for the user's profile picture.
     avatar: {
-      type: String, // cloudinary url
+      type: String,
       required: true,
     },
+    // Stored as a bcrypt hash — never the plain-text password.
     password: { type: String, required: true },
+    // Arrays of User ObjectIds representing the social graph.
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    // Persisted refresh token; cleared on logout to invalidate the session.
     refreshToken: {
       type: String,
     },
@@ -20,7 +24,8 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// The pre hook is used to execute a function before saving a user to the database.
+// Hash the password before every save, but only when the password field has
+// actually changed (avoids re-hashing an already-hashed value on unrelated saves).
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
@@ -28,10 +33,14 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Compare a plain-text candidate password against the stored hash.
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// Generate a short-lived JWT that the client sends with every API request.
+// The payload includes _id, email, and name so the middleware can attach
+// the full user object to req.user without an extra DB lookup for basic info.
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
@@ -46,6 +55,8 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
+// Generate a long-lived refresh token containing only the user ID.
+// Stored in the DB so it can be invalidated server-side on logout.
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {

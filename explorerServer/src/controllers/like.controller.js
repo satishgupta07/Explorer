@@ -3,24 +3,27 @@ import { Post } from "../models/post.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+// POST /api/v1/posts/post/:postId  (protected)
+// Toggle like/unlike on a post. A single endpoint handles both actions:
+// hitting it while already liked removes the like (unlike), and vice versa.
+// The client uses the returned isLiked boolean to update the UI optimistically.
 const likeDislikePost = async (req, res) => {
   const { postId } = req.params;
 
   const post = await Post.findById(postId);
 
-  // Check for post existence
   if (!post) {
     throw new ApiError(404, "Post does not exist");
   }
 
-  // See if user has already liked the post
+  // Check whether the current user has an existing like record for this post.
   const isAlreadyLiked = await SocialLike.findOne({
     postId,
     likedBy: req.user?._id,
   });
 
   if (isAlreadyLiked) {
-    // if already liked, dislike it by removing the record from the DB
+    // Unlike: remove the SocialLike document to decrement the effective count.
     await SocialLike.findOneAndDelete({
       postId,
       likedBy: req.user?._id,
@@ -28,14 +31,12 @@ const likeDislikePost = async (req, res) => {
     return res.status(200).json(
       new ApiResponse(
         200,
-        {
-          isLiked: false,
-        },
+        { isLiked: false },
         "Unliked successfully"
       )
     );
   } else {
-    // if not liked, like it by adding the record from the DB
+    // Like: create a new SocialLike document for this user/post pair.
     await SocialLike.create({
       postId,
       likedBy: req.user?._id,
@@ -43,9 +44,7 @@ const likeDislikePost = async (req, res) => {
     return res.status(200).json(
       new ApiResponse(
         200,
-        {
-          isLiked: true,
-        },
+        { isLiked: true },
         "Liked successfully"
       )
     );

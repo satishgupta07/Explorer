@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+
+// Exported so other modules can inspect the raw Mongoose connection instance if needed.
 export let dbInstance = undefined;
 
 const connectDB = async () => {
@@ -12,6 +14,7 @@ const connectDB = async () => {
     );
   } catch (error) {
     console.log("MongoDB connection error: ", error);
+    // Exit the process so the server doesn't start without a database.
     process.exit(1);
   }
 };

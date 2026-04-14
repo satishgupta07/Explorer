@@ -5,6 +5,10 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+// GET /api/v1/users/profile/:userId  (protected)
+// Returns a user's public profile including their posts (with like/comment data),
+// their followers/following lists, and a flag for whether the requester already
+// follows them (used to toggle the Follow/Unfollow button on the client).
 const getUserProfile = async (req, res) => {
   const { userId } = req.params;
 
@@ -14,6 +18,7 @@ const getUserProfile = async (req, res) => {
     throw new ApiError(404, "User does not exist");
   }
 
+  // Check if the requesting user is already in the target user's followers array.
   const isUserInFollowers = user.followers.includes(req.user._id);
 
   const followers = await User.find(
@@ -72,35 +77,36 @@ const getUserProfile = async (req, res) => {
   );
 };
 
+// POST /api/v1/users/follow-user/:userId  (protected)
+// Toggle follow/unfollow. Both the requester's `following` array and the target's
+// `followers` array must be updated atomically to keep the social graph consistent.
 const followAndUnfollowUser = async (req, res) => {
   const { userId } = req.params;
 
   const user = await User.findById(req.user._id);
 
-  // Check if the user to follow/unfollow exists
   const userToFollow = await User.findById(userId);
   if (!userToFollow) {
     throw new ApiError(404, "User not found");
   }
 
   try {
-    // Check if the user is already following the target user
     const isFollowing = user.following.includes(userId);
     if (isFollowing) {
-      // Unfollow the user
+      // Unfollow: remove userId from requester's following, and requester's id
+      // from target's followers — Mongoose's .pull() handles both.
       user.following.pull(userId);
       userToFollow.followers.pull(req.user._id);
     } else {
-      // Follow the user
+      // Follow: add to both arrays symmetrically.
       user.following.push(userId);
       userToFollow.followers.push(req.user._id);
     }
 
-    // Save changes to both users
+    // Both documents must be saved for the follow graph to remain consistent.
     await user.save();
     await userToFollow.save();
 
-    // Respond with success message
     const message = isFollowing
       ? "Unfollowed successfully"
       : "Followed successfully";
@@ -109,7 +115,6 @@ const followAndUnfollowUser = async (req, res) => {
       message,
     });
   } catch (error) {
-    // Handle potential errors, e.g., database errors
     throw new ApiError(500, "Internal Server Error");
   }
 };

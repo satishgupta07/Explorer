@@ -11,11 +11,13 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.route("/").get(verifyJWT, getAllPosts);
-router.post("/create-post", verifyJWT, createPost);
-router.get("/myposts", verifyJWT, getMyPosts);
-router.delete("/deletepost/:postId", verifyJWT, deletePost);
+// All post routes are protected — verifyJWT runs before every controller.
+router.route("/").get(verifyJWT, getAllPosts);          // global feed
+router.post("/create-post", verifyJWT, createPost);    // create a new post
+router.get("/myposts", verifyJWT, getMyPosts);          // current user's posts
+router.delete("/deletepost/:postId", verifyJWT, deletePost); // delete own post
 
+// Like/unlike toggle — reuses the post router since it relates to a post resource.
 router.post("/post/:postId", verifyJWT, likeDislikePost);
 
 export default router;

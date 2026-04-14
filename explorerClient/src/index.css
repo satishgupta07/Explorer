@@ -1,3 +1,117 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FAFAFA;
+    color: #262626;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* Primary action button */
+  .btn-primary {
+    @apply w-full py-[7px] px-4 bg-ig-purple hover:bg-ig-purple-dark
+      text-white font-semibold rounded-lg text-sm
+      transition-colors duration-200
+      disabled:opacity-50 disabled:cursor-not-allowed
+      focus:outline-none focus:ring-2 focus:ring-ig-purple/40;
+  }
+
+  /* Outline/ghost button */
+  .btn-outline {
+    @apply py-1 px-3 border border-ig-border rounded-lg text-sm font-semibold
+      hover:bg-gray-50 transition-colors duration-150
+      focus:outline-none focus:ring-2 focus:ring-ig-purple/30;
+  }
+
+  /* Standard card */
+  .card {
+    @apply bg-white border border-ig-border overflow-hidden;
+  }
+
+  /* Card with rounded corners (desktop) */
+  .card-rounded {
+    @apply card rounded-lg;
+  }
+
+  /* Gradient ring for stories */
+  .story-ring {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    padding: 2.5px;
+    border-radius: 50%;
+    display: inline-flex;
+  }
+
+  /* Shimmer skeleton base */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.6s infinite linear;
+    border-radius: 4px;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-3 py-2 text-sm border border-ig-border rounded-lg
+      bg-ig-bg placeholder-ig-secondary
+      focus:outline-none focus:ring-1 focus:ring-ig-purple focus:border-ig-purple
+      transition-colors duration-150;
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: #dbdbdb; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b0b0b0; }
+
+/* ─── Bottom nav spacing on mobile ──────────────────────────────────────── */
+@media (max-width: 767px) {
+  .feed-area {
+    padding-bottom: 64px;
+  }
+}
+
+/* ─── Smooth image loading ───────────────────────────────────────────────── */
+img {
+  transition: opacity 0.2s ease;
+}
+
+/* ─── Post image aspect-ratio on mobile ─────────────────────────────────── */
+.post-image {
+  width: 100%;
+  object-fit: cover;
+}
+
+/* ─── Profile grid ───────────────────────────────────────────────────────── */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+@media (min-width: 640px) {
+  .profile-grid {
+    gap: 4px;
+  }
+}

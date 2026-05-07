@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useFollow } from "../../contexts/FollowContext";
 import { SuggestedUserSkeleton } from "../Skeleton/SidebarSkeleton";
 import conf from "../../config/conf";
 import { avatarUrl } from "../../utils/cloudinary";
@@ -8,15 +9,16 @@ import { apiFetch } from "../../utils/apiFetch";
 
 /**
  * Right sidebar widget — shows up to 5 users the current user isn't following.
- * Replaces the static trending-hashtags widget with actionable social content.
+ * Follow state is read from FollowContext so the button reflects reality on
+ * mount and stays in sync with toggles made elsewhere (UserProfile, etc.).
  */
 function SuggestedUsers() {
   const { token } = useAuth();
   const jwtToken = token || localStorage.getItem("token");
+  const { isFollowing, toggleFollow } = useFollow();
 
-  const [users, setUsers]           = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [following, setFollowing]   = useState(new Set()); // track local follow state
+  const [users,   setUsers]   = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!jwtToken) return;
@@ -39,31 +41,9 @@ function SuggestedUsers() {
     return () => controller.abort();
   }, [jwtToken]);
 
-  const handleFollow = async (userId) => {
-    // Optimistically update the UI.
-    setFollowing((prev) => {
-      const next = new Set(prev);
-      next.has(userId) ? next.delete(userId) : next.add(userId);
-      return next;
-    });
-
-    try {
-      await apiFetch(`${conf.serverUrl}/users/follow-user/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-    } catch (err) {
-      // Roll back on failure.
-      setFollowing((prev) => {
-        const next = new Set(prev);
-        next.has(userId) ? next.delete(userId) : next.add(userId);
-        return next;
-      });
-      console.error("Follow/unfollow failed:", err);
-    }
+  const handleFollow = (user) => {
+    // Fire-and-forget — context handles optimistic update and rollback.
+    toggleFollow(user).catch(() => {});
   };
 
   return (
@@ -86,7 +66,7 @@ function SuggestedUsers() {
       ) : (
         <div className="space-y-1">
           {users.map((u) => {
-            const isFollowed = following.has(u._id);
+            const isFollowed = isFollowing(u._id);
             return (
               <div key={u._id} className="flex items-center gap-3 py-2">
                 <Link to={`/profile/${u._id}`} className="shrink-0">
@@ -108,7 +88,7 @@ function SuggestedUsers() {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleFollow(u._id)}
+                  onClick={() => handleFollow(u)}
                   className={`text-xs font-semibold px-3 py-1 rounded-lg border transition-colors ${
                     isFollowed
                       ? "border-ig-border text-ig-text hover:bg-gray-50"

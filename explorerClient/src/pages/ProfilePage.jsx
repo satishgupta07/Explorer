@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useFollow } from "../contexts/FollowContext";
 import conf from "../config/conf";
 import EditProfileModal from "../components/EditProfile/EditProfileModal";
 import { avatarUrl, postImageUrl } from "../utils/cloudinary";
@@ -17,6 +18,7 @@ function ProfilePage() {
   const [selected,    setSelected]    = useState(null);  // post shown in detail modal
   const [editOpen,    setEditOpen]    = useState(false); // edit profile modal
   const { token, user }               = useAuth();
+  const { followingCount }            = useFollow();
   const jwtToken = token || localStorage.getItem("token");
   const _user    = user  || JSON.parse(localStorage.getItem("user") || "null");
 
@@ -81,7 +83,7 @@ function ProfilePage() {
               <span className="text-sm text-ig-secondary">followers</span>
             </div>
             <div className="text-center sm:text-left">
-              <span className="font-semibold block">{_user.following?.length ?? 0}</span>
+              <span className="font-semibold block">{followingCount}</span>
               <span className="text-sm text-ig-secondary">following</span>
             </div>
           </div>

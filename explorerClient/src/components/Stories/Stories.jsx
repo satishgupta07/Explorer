@@ -1,48 +1,27 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { apiFetch } from "../../utils/apiFetch";
-import conf from "../../config/conf";
+import { useFollow } from "../../contexts/FollowContext";
 import { avatarUrl } from "../../utils/cloudinary";
 
 /**
  * Horizontal scrollable stories strip — Instagram-style gradient rings.
  *
  * Shows the logged-in user's avatar ("Your Story") followed by the real
- * avatars of people they follow. Tapping a followed user navigates to their
- * profile. Falls back to a minimal skeleton while the following list loads.
+ * avatars of people they follow. Reads the following list from FollowContext
+ * so it stays in sync with follow toggles made in the sidebar or on profiles.
  */
 function Stories() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
+  const { followingUsers, isReady } = useFollow();
   const navigate = useNavigate();
-  const stripRef = useRef(null);
 
-  const _user    = user  || JSON.parse(localStorage.getItem("user") || "null");
-  const jwtToken = token || localStorage.getItem("token");
-
-  const [following, setFollowing] = useState([]);
-  const [loading,   setLoading]   = useState(true);
-
-  useEffect(() => {
-    if (!jwtToken) { setLoading(false); return; }
-    let cancelled = false;
-
-    apiFetch(`${conf.serverUrl}/users/following`, {
-      headers: { Authorization: `Bearer ${jwtToken}` },
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (!cancelled) setFollowing(data.data ?? []);
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setLoading(false); });
-
-    return () => { cancelled = true; };
-  }, [jwtToken]);
+  const _user     = user || JSON.parse(localStorage.getItem("user") || "null");
+  const following = followingUsers;
+  const loading   = !isReady;
 
   return (
     <div
-      ref={stripRef}
       className="card sm:rounded-lg mb-4 px-4 py-3 flex gap-4 overflow-x-auto scrollbar-hide"
       style={{ scrollbarWidth: "none" }}
     >

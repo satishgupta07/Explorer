@@ -1,15 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useFollow } from "../../contexts/FollowContext";
 import { UserMiniProfileSkeleton } from "../Skeleton/SidebarSkeleton";
 import { avatarUrl } from "../../utils/cloudinary";
 
 /**
  * Left sidebar widget showing the logged-in user's avatar, name, and quick stats.
- * Replaces the weather widget with genuinely useful social context.
+ * Following count is sourced from FollowContext so it updates instantly when
+ * the user follows/unfollows someone elsewhere in the app.
  */
 function UserMiniProfile() {
   const { user } = useAuth();
+  const { followingCount } = useFollow();
   const _user = user || JSON.parse(localStorage.getItem("user") || "null");
 
   if (!_user) return <UserMiniProfileSkeleton />;
@@ -17,7 +20,7 @@ function UserMiniProfile() {
   const stats = [
     { label: "Posts",     value: "—" },
     { label: "Followers", value: _user.followers?.length ?? 0 },
-    { label: "Following", value: _user.following?.length ?? 0 },
+    { label: "Following", value: followingCount },
   ];
 
   return (

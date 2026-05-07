@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useFollow } from "../contexts/FollowContext";
 import conf from "../config/conf";
 import { avatarUrl, postImageUrl } from "../utils/cloudinary";
 import { apiFetch } from "../utils/apiFetch";
@@ -8,15 +9,21 @@ import { apiFetch } from "../utils/apiFetch";
 /**
  * Another user's public profile — identical grid layout to ProfilePage
  * plus a Follow / Unfollow toggle button.
+ *
+ * Follow state lives in FollowContext so toggling here also updates the
+ * sidebar's SuggestedUsers and the Stories strip without a refetch.
  */
 function UserProfile() {
-  const [profile,   setProfile]   = useState(null);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [profile,       setProfile]       = useState(null);
   const [followLoading, setFollowLoading] = useState(false);
-  const [selected,  setSelected]  = useState(null);
-  const { userid }                = useParams();
-  const { token }                 = useAuth();
-  const jwtToken                  = token || localStorage.getItem("token");
+  const [selected,      setSelected]      = useState(null);
+
+  const { userid }     = useParams();
+  const { token }      = useAuth();
+  const jwtToken       = token || localStorage.getItem("token");
+  const { isFollowing, toggleFollow } = useFollow();
+
+  const followingTarget = profile ? isFollowing(profile.user._id) : false;
 
   const fetchProfile = useCallback(async (signal) => {
     try {
@@ -25,10 +32,7 @@ function UserProfile() {
         signal,
       });
       const data = await res.json();
-      if (data.data) {
-        setProfile(data.data);
-        setIsFollowing(data.data.isUserInFollowers);
-      }
+      if (data.data) setProfile(data.data);
     } catch (err) {
       if (err.name !== "AbortError") console.error("Profile fetch error:", err);
     }
@@ -41,23 +45,33 @@ function UserProfile() {
   }, [fetchProfile]);
 
   const handleFollow = useCallback(async () => {
+    if (!profile) return;
     setFollowLoading(true);
-    // Optimistic toggle
-    setIsFollowing((v) => !v);
+    const wasFollowing = isFollowing(profile.user._id);
+
+    // Optimistic ±1 to the displayed follower count. We only render the
+    // length, so the placeholder value's identity doesn't matter.
+    setProfile((p) => ({
+      ...p,
+      followers: wasFollowing
+        ? p.followers.slice(0, -1)
+        : [...p.followers, "__self__"],
+    }));
+
     try {
-      await apiFetch(`${conf.serverUrl}/users/follow-user/${profile.user._id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwtToken}` },
-      });
-      // Refresh counts after follow action.
-      fetchProfile(new AbortController().signal);
-    } catch (err) {
-      setIsFollowing((v) => !v); // roll back
-      console.error("Follow/unfollow error:", err);
+      await toggleFollow(profile.user);
+    } catch {
+      // Roll the count change back; toggleFollow already restored its own state.
+      setProfile((p) => ({
+        ...p,
+        followers: wasFollowing
+          ? [...p.followers, "__self__"]
+          : p.followers.slice(0, -1),
+      }));
     } finally {
       setFollowLoading(false);
     }
-  }, [profile, jwtToken, fetchProfile]);
+  }, [profile, isFollowing, toggleFollow]);
 
   // ── Loading skeleton ──────────────────────────────────────────────────────
 
@@ -89,8 +103,8 @@ function UserProfile() {
       {/* ── Profile Header ─────────────────────────────────────────── */}
       <div className="flex items-center gap-8 sm:gap-16 px-4 sm:px-0 py-8">
         {/* Avatar */}
-        <div className={isFollowing ? "story-ring shrink-0" : "shrink-0"}>
-          <div className={isFollowing ? "bg-white rounded-full p-[3px]" : ""}>
+        <div className={followingTarget ? "story-ring shrink-0" : "shrink-0"}>
+          <div className={followingTarget ? "bg-white rounded-full p-[3px]" : ""}>
             <img
               src={avatarUrl(user.avatar)}
               alt={user.name}
@@ -107,12 +121,12 @@ function UserProfile() {
               onClick={handleFollow}
               disabled={followLoading}
               className={`px-5 py-1.5 rounded-lg text-sm font-semibold transition-all ${
-                isFollowing
+                followingTarget
                   ? "border border-ig-border text-ig-text hover:bg-gray-50"
                   : "bg-ig-purple text-white hover:bg-ig-purple-dark"
               } disabled:opacity-60`}
             >
-              {followLoading ? "…" : isFollowing ? "Following" : "Follow"}
+              {followLoading ? "…" : followingTarget ? "Following" : "Follow"}
             </button>
           </div>
           <div className="flex gap-6 sm:gap-10 text-ig-text">

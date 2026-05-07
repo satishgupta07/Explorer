@@ -32,11 +32,17 @@ function CreatePost({ onPostCreated }) {
 
   const handleFile = useCallback((file) => {
     if (!file || !file.type.startsWith("image/")) return;
+    // The drop-zone copy advertises "up to 10MB"; enforce it here so the user
+    // gets immediate feedback instead of a silent Cloudinary failure.
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be under 10 MB.");
+      return;
+    }
     setImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => setImagePreview(e.target.result);
     reader.readAsDataURL(file);
-  }, []);
+  }, [toast]);
 
   const handleFileInput = useCallback(
     (e) => handleFile(e.target.files[0]),
@@ -101,9 +107,22 @@ function CreatePost({ onPostCreated }) {
         body: JSON.stringify({ title: title.trim(), image: imageUrl }),
       });
       if (!postRes.ok) throw new Error("Failed to create post");
+      const postBody    = await postRes.json();
+      const createdPost = postBody?.data?.createdPost ?? postBody?.createdPost;
+
+      // Server returns a bare Post document; hydrate the engagement fields the
+      // feed expects so the parent can prepend it without a full feed refetch.
+      const newPost = {
+        ...createdPost,
+        postedBy:     { _id: _user._id, name: _user.name, avatar: _user.avatar },
+        likeCount:    0,
+        commentCount: 0,
+        comments:     [],
+        isLiked:      false,
+      };
 
       close();
-      onPostCreated?.();
+      onPostCreated?.(newPost);
     } catch (err) {
       console.error("Create post failed:", err);
       toast.error("Failed to share post. Please try again.");
@@ -112,7 +131,7 @@ function CreatePost({ onPostCreated }) {
     }
   // conf is a module-level constant — not reactive, so excluded from deps.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, imageFile, uploading, jwtToken, close, onPostCreated]);
+  }, [title, imageFile, uploading, jwtToken, _user, close, onPostCreated, toast]);
 
   // ── Render ────────────────────────────────────────────────────────────────
 

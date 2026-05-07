@@ -90,10 +90,14 @@ function Posts() {
   }, [hasMore, loadingMore, loading, page, fetchPage]);
 
   // Exposed to CreatePost so a fresh post appears at the top immediately.
-  const handlePostCreated = useCallback(() => {
-    const ctrl = new AbortController();
-    fetchPage(1, ctrl.signal, true);
-  }, [fetchPage]);
+  // We prepend rather than refetching page 1 so the user's scroll position
+  // and any subsequent pages they've already loaded are preserved.
+  const handlePostCreated = useCallback((newPost) => {
+    if (!newPost) return;
+    setPosts((prev) =>
+      prev.some((p) => p._id === newPost._id) ? prev : [newPost, ...prev]
+    );
+  }, [setPosts]);
 
   // ── Render ────────────────────────────────────────────────────────────────
 

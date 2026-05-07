@@ -23,32 +23,45 @@ import { postImageUrl, avatarUrl } from "../../utils/cloudinary";
  *  - Cloudinary URL transforms — serves compressed/resized images
  */
 const PostCard = memo(function PostCard({ post }) {
-  const [isLiked,       setIsLiked]       = useState(post.isLiked);
-  const [likeCount,     setLikeCount]     = useState(post.likeCount);
-  const [showComments,  setShowComments]  = useState(false);
-  const [textComment,   setTextComment]   = useState("");
-  const [isSubmitting,  setIsSubmitting]  = useState(false);
-  const [heartAnim,     setHeartAnim]     = useState(false);
-  const [comments,      setComments]      = useState(post.comments ?? []);
+  // Purely UI-local state (animations, toggles, in-progress submits).
+  const [showComments, setShowComments] = useState(false);
+  const [textComment,  setTextComment]  = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [heartAnim,    setHeartAnim]    = useState(false);
 
-  const { token, user }     = useAuth();
-  const { toast }           = useToast();
+  const { token, user } = useAuth();
+  const { toast }       = useToast();
+  const { setPosts }    = usePost();
+  const navigate        = useNavigate();
+
   const jwtToken = token || localStorage.getItem("token");
   const _user    = user  || JSON.parse(localStorage.getItem("user") || "null");
-  const { setPosts } = usePost();
-  const navigate = useNavigate();
+
+  // Data state read straight from the canonical posts array — no local copies,
+  // so a feed refetch / page-2 append / cross-component mutation is reflected
+  // immediately without the card's local useState going stale.
+  const isLiked   = !!post.isLiked;
+  const likeCount = post.likeCount ?? 0;
+  const comments  = post.comments ?? [];
 
   const isOwner = _user?._id === post.postedBy._id;
 
   // Lazy-load the post image when it enters the viewport.
   const [imageRef, imageVisible] = useIntersectionObserver({ threshold: 0.01, rootMargin: "200px" });
 
+  // Patch this single post inside the global posts array.
+  const updatePost = useCallback((updater) => {
+    setPosts((prev) => prev.map((p) => (p._id === post._id ? updater(p) : p)));
+  }, [post._id, setPosts]);
+
   // ── Like ──────────────────────────────────────────────────────────────────
 
   const handleLike = useCallback(async () => {
-    const wasLiked = isLiked;
-    setIsLiked(!wasLiked);
-    setLikeCount((c) => wasLiked ? c - 1 : c + 1);
+    const wasLiked        = post.isLiked;
+    const originalCount   = post.likeCount ?? 0;
+    const optimisticCount = wasLiked ? originalCount - 1 : originalCount + 1;
+
+    updatePost((p) => ({ ...p, isLiked: !wasLiked, likeCount: optimisticCount }));
     setHeartAnim(true);
     setTimeout(() => setHeartAnim(false), 300);
 
@@ -57,17 +70,19 @@ const PostCard = memo(function PostCard({ post }) {
         method:  "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwtToken}` },
       });
-      const data = await res.json();
-      setIsLiked(data.data.isLiked);
-      setLikeCount((c) => {
-        const expectedAfter = wasLiked ? post.likeCount - 1 : post.likeCount + 1;
-        return data.data.isLiked !== wasLiked ? c : expectedAfter;
-      });
+      const data        = await res.json();
+      const serverLiked = data.data.isLiked;
+      // Server agrees the state flipped → keep optimistic count.
+      // Server disagrees (action was a no-op) → revert to original count.
+      updatePost((p) => ({
+        ...p,
+        isLiked:   serverLiked,
+        likeCount: serverLiked === !wasLiked ? optimisticCount : originalCount,
+      }));
     } catch {
-      setIsLiked(wasLiked);
-      setLikeCount((c) => wasLiked ? c + 1 : c - 1);
+      updatePost((p) => ({ ...p, isLiked: wasLiked, likeCount: originalCount }));
     }
-  }, [isLiked, jwtToken, post._id, post.likeCount]);
+  }, [post.isLiked, post.likeCount, post._id, jwtToken, updatePost]);
 
   // ── Comment add ───────────────────────────────────────────────────────────
 
@@ -82,7 +97,7 @@ const PostCard = memo(function PostCard({ post }) {
       author:    { _id: _user._id, name: _user.name, avatar: _user.avatar },
       createdAt: new Date().toISOString(),
     };
-    setComments((prev) => [...prev, tempComment]);
+    updatePost((p) => ({ ...p, comments: [...(p.comments ?? []), tempComment] }));
     setTextComment("");
     setShowComments(true);
 
@@ -94,34 +109,44 @@ const PostCard = memo(function PostCard({ post }) {
       });
       const data = await res.json();
       if (data.data) {
-        setComments((prev) => prev.map((c) =>
-          c._id === tempComment._id
-            ? { ...data.data, author: { _id: _user._id, name: _user.name, avatar: _user.avatar } }
-            : c
-        ));
+        updatePost((p) => ({
+          ...p,
+          comments: (p.comments ?? []).map((c) =>
+            c._id === tempComment._id
+              ? { ...data.data, author: data.data.author ?? { _id: _user._id, name: _user.name, avatar: _user.avatar } }
+              : c
+          ),
+        }));
       }
     } catch {
-      setComments((prev) => prev.filter((c) => c._id !== tempComment._id));
+      updatePost((p) => ({
+        ...p,
+        comments: (p.comments ?? []).filter((c) => c._id !== tempComment._id),
+      }));
       setTextComment(tempComment.content);
       toast.error("Could not post comment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
-  }, [textComment, isSubmitting, jwtToken, post._id, _user, toast]);
+  }, [textComment, isSubmitting, jwtToken, post._id, _user, toast, updatePost]);
 
   // ── Comment delete (called by Comment child) ──────────────────────────────
 
   const handleCommentDelete = useCallback((commentId, restore) => {
     if (restore) {
-      // Roll back: re-insert the comment in its original position.
-      setComments((prev) => {
-        const already = prev.find((c) => c._id === commentId);
-        return already ? prev : [...prev, restore];
+      // Roll back: re-insert the comment if it isn't already present.
+      updatePost((p) => {
+        const list    = p.comments ?? [];
+        const already = list.find((c) => c._id === commentId);
+        return already ? p : { ...p, comments: [...list, restore] };
       });
     } else {
-      setComments((prev) => prev.filter((c) => c._id !== commentId));
+      updatePost((p) => ({
+        ...p,
+        comments: (p.comments ?? []).filter((c) => c._id !== commentId),
+      }));
     }
-  }, []);
+  }, [updatePost]);
 
   // ── Post delete ───────────────────────────────────────────────────────────
 
